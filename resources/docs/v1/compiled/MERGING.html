@@ -1,0 +1,333 @@
+<h1>Cart Merging</h1>
+<p>FlexiCart provides a flexible cart merging system that allows you to merge one cart into another. This is particularly useful for merging guest carts with user carts when a user logs in.</p>
+<h2>Basic Usage</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Cart</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Merge source cart into target cart</span></span>
+<span class="line"><span style="color:#E1E4E8">$targetCart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">mergeFrom</span><span style="color:#E1E4E8">($sourceCart);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Or merge by cart ID (requires database storage)</span></span>
+<span class="line"><span style="color:#E1E4E8">$targetCart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">mergeFrom</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;source-cart-id&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<h2>Merge Strategies</h2>
+<p>FlexiCart supports four built-in merge strategies that control how items and conditions are merged:</p>
+<h3>Sum Strategy (Default)</h3>
+<p>Adds quantities together when the same item exists in both carts. Source attributes win, and conditions are combined.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$targetCart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">mergeFrom</span><span style="color:#E1E4E8">($sourceCart, </span><span style="color:#9ECBFF">&#39;sum&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quantity</td>
+<td>Target + Source</td>
+</tr>
+<tr>
+<td>Attributes</td>
+<td>Source wins</td>
+</tr>
+<tr>
+<td>Item Conditions</td>
+<td>Combined (source overrides same-named)</td>
+</tr>
+<tr>
+<td>Cart Conditions</td>
+<td>Combined (source overrides same-named)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Target has: Widget (qty: 2)</span></span>
+<span class="line"><span style="color:#6A737D">// Source has: Widget (qty: 3)</span></span>
+<span class="line"><span style="color:#6A737D">// Result: Widget (qty: 5)</span></span>
+<span class="line"></span></code></pre>
+<h3>Replace Strategy</h3>
+<p>Source completely replaces target. Useful when you want the source cart to take precedence.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$targetCart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">mergeFrom</span><span style="color:#E1E4E8">($sourceCart, </span><span style="color:#9ECBFF">&#39;replace&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quantity</td>
+<td>Source</td>
+</tr>
+<tr>
+<td>Attributes</td>
+<td>Source</td>
+</tr>
+<tr>
+<td>Item Conditions</td>
+<td>Source</td>
+</tr>
+<tr>
+<td>Cart Conditions</td>
+<td>Source</td>
+</tr>
+</tbody>
+</table>
+<h3>Max Strategy</h3>
+<p>Keeps the highest quantity. Source attributes win, and conditions are combined.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$targetCart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">mergeFrom</span><span style="color:#E1E4E8">($sourceCart, </span><span style="color:#9ECBFF">&#39;max&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quantity</td>
+<td>Max of Target and Source</td>
+</tr>
+<tr>
+<td>Attributes</td>
+<td>Source wins</td>
+</tr>
+<tr>
+<td>Item Conditions</td>
+<td>Combined</td>
+</tr>
+<tr>
+<td>Cart Conditions</td>
+<td>Combined</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Target has: Widget (qty: 5)</span></span>
+<span class="line"><span style="color:#6A737D">// Source has: Widget (qty: 3)</span></span>
+<span class="line"><span style="color:#6A737D">// Result: Widget (qty: 5)</span></span>
+<span class="line"></span></code></pre>
+<h3>Keep Target Strategy</h3>
+<p>Keeps target values for existing items. Only adds items that don't exist in the target.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$targetCart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">mergeFrom</span><span style="color:#E1E4E8">($sourceCart, </span><span style="color:#9ECBFF">&#39;keep_target&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quantity</td>
+<td>Target (for existing items)</td>
+</tr>
+<tr>
+<td>Attributes</td>
+<td>Target (for existing items)</td>
+</tr>
+<tr>
+<td>Item Conditions</td>
+<td>Target</td>
+</tr>
+<tr>
+<td>Cart Conditions</td>
+<td>Target</td>
+</tr>
+</tbody>
+</table>
+<h2>Configuration</h2>
+<p>Configure default merge behavior in <code>config/flexicart.php</code>:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#9ECBFF">&#39;merge&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Default merge strategy: &#39;sum&#39;, &#39;replace&#39;, &#39;max&#39;, &#39;keep_target&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;default_strategy&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CART_MERGE_STRATEGY&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;sum&#39;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Whether to clear the source cart after merging</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;delete_source&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CART_MERGE_DELETE_SOURCE&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">],</span></span>
+<span class="line"></span></code></pre>
+<h2>Using Strategy Objects</h2>
+<p>You can also pass a strategy object instead of a string:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Strategies\MaxMergeStrategy</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$targetCart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">mergeFrom</span><span style="color:#E1E4E8">($sourceCart, </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">MaxMergeStrategy</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"></span></code></pre>
+<h2>Custom Merge Strategies</h2>
+<p>You can create custom merge strategies by implementing <code>MergeStrategyInterface</code>:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">namespace</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">App\Strategies</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\CartItem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Contracts\ConditionInterface</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Strategies\MergeStrategyInterface</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Illuminate\Support\Collection</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">CustomMergeStrategy</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">implements</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">MergeStrategyInterface</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">string</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;custom&#39;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">mergeItem</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">CartItem</span><span style="color:#E1E4E8"> $targetItem, </span><span style="color:#79B8FF">CartItem</span><span style="color:#E1E4E8"> $sourceItem)</span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">array</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#6A737D">// Return merged item data array</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $targetItem</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">id,</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $sourceItem</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">name,</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $sourceItem</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">unitPrice</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $targetItem</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">quantity </span><span style="color:#F97583">+</span><span style="color:#E1E4E8"> $sourceItem</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">quantity,</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;taxable&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $sourceItem</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">taxable,</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;attributes&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $sourceItem</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">attributes</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">toArray</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">        ];</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">handleNewItem</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">CartItem</span><span style="color:#E1E4E8"> $sourceItem)</span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">array</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $sourceItem</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">id,</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $sourceItem</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">name,</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $sourceItem</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">unitPrice</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $sourceItem</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">quantity,</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;taxable&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $sourceItem</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">taxable,</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;attributes&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $sourceItem</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">attributes</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">toArray</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">        ];</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">mergeConditions</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">Collection</span><span style="color:#E1E4E8"> $targetConditions, </span><span style="color:#79B8FF">Collection</span><span style="color:#E1E4E8"> $sourceConditions)</span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Collection</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#6A737D">// Return merged conditions collection</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> $targetConditions</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">merge</span><span style="color:#E1E4E8">($sourceConditions);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span></code></pre>
+<p>Register your custom strategy:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Strategies\MergeStrategyFactory</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">MergeStrategyFactory</span><span style="color:#F97583">::</span><span style="color:#B392F0">register</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;custom&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">CustomMergeStrategy</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Now you can use it</span></span>
+<span class="line"><span style="color:#E1E4E8">$targetCart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">mergeFrom</span><span style="color:#E1E4E8">($sourceCart, </span><span style="color:#9ECBFF">&#39;custom&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<h2>CartMerged Event</h2>
+<p>When carts are merged, a <code>CartMerged</code> event is dispatched:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\CartMerged</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">CartMerged</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">CartMerged</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Cart merged&quot;</span><span style="color:#E1E4E8">, [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;target_cart_id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">cartId,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;source_cart_id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">sourceCartId,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;merged_items_count&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">mergedItems</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">count</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;strategy&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">strategy,</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]);</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h3>Event Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cartId</code></td>
+<td>string</td>
+<td>The target cart ID</td>
+</tr>
+<tr>
+<td><code>sourceCartId</code></td>
+<td>string</td>
+<td>The source cart ID that was merged</td>
+</tr>
+<tr>
+<td><code>mergedItems</code></td>
+<td>Collection</td>
+<td>Items that were merged/added</td>
+</tr>
+<tr>
+<td><code>strategy</code></td>
+<td>string</td>
+<td>The merge strategy name used</td>
+</tr>
+<tr>
+<td><code>occurredAt</code></td>
+<td>DateTimeImmutable</td>
+<td>When the merge occurred</td>
+</tr>
+</tbody>
+</table>
+<h2>Use Cases</h2>
+<h3>Guest to User Cart Merge</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// When user logs in</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">handleLogin</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">Request</span><span style="color:#E1E4E8"> $request)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    $user </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Auth</span><span style="color:#F97583">::</span><span style="color:#B392F0">user</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">    $guestCartId </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">session</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;guest_cart_id&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ($guestCartId) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $userCart </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">getCartById</span><span style="color:#E1E4E8">($user</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">cart_id);</span></span>
+<span class="line"><span style="color:#E1E4E8">        $userCart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">mergeFrom</span><span style="color:#E1E4E8">($guestCartId, </span><span style="color:#9ECBFF">&#39;sum&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#B392F0">session</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">forget</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;guest_cart_id&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span></code></pre>
+<h3>Wishlist to Cart</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Convert wishlist to cart</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">mergeFrom</span><span style="color:#E1E4E8">($wishlistCart, </span><span style="color:#9ECBFF">&#39;keep_target&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<h3>Cart Recovery</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Restore abandoned cart</span></span>
+<span class="line"><span style="color:#E1E4E8">$currentCart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">mergeFrom</span><span style="color:#E1E4E8">($abandonedCart, </span><span style="color:#9ECBFF">&#39;max&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<h2>Strategy Comparison</h2>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sum</code></td>
+<td>Combining carts where you want all quantities</td>
+</tr>
+<tr>
+<td><code>replace</code></td>
+<td>Source should override everything</td>
+</tr>
+<tr>
+<td><code>max</code></td>
+<td>Keeping the larger quantity</td>
+</tr>
+<tr>
+<td><code>keep_target</code></td>
+<td>Preserving target, only adding new items</td>
+</tr>
+</tbody>
+</table>
+<h2>Error Handling</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Exceptions\CartException</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">try</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    $targetCart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">mergeFrom</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;invalid-cart-id&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">} </span><span style="color:#F97583">catch</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">CartException</span><span style="color:#E1E4E8"> $e) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Source cart not found</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">error</span><span style="color:#E1E4E8">($e</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getMessage</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span></code></pre>
+<h2>Available Strategies</h2>
+<p>Get a list of available merge strategies:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Strategies\MergeStrategyFactory</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$strategies </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">MergeStrategyFactory</span><span style="color:#F97583">::</span><span style="color:#B392F0">available</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#6A737D">// [&#39;sum&#39;, &#39;replace&#39;, &#39;max&#39;, &#39;keep_target&#39;]</span></span>
+<span class="line"></span></code></pre>

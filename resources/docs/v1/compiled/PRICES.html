@@ -1,0 +1,124 @@
+<h1>Working with Prices</h1>
+<p>FlexiCart uses the <a href="https://github.com/brick/money">Brick/Money</a> library for precise currency calculations, avoiding floating-point arithmetic errors common in financial applications.</p>
+<h2>The Price Class</h2>
+<p>The <code>Price</code> class is an immutable value object that wraps Brick/Money, providing a clean API for price operations.</p>
+<h2>Creating Price Objects</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Price</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Create from numeric value (uses configured currency)</span></span>
+<span class="line"><span style="color:#E1E4E8">$price </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">29.99</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Create with specific currency</span></span>
+<span class="line"><span style="color:#E1E4E8">$price </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">29.99</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;EUR&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Create from Money object</span></span>
+<span class="line"><span style="color:#E1E4E8">$money </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">\Brick\Money\Money</span><span style="color:#F97583">::</span><span style="color:#B392F0">of</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">29.99</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;USD&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">$price </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#E1E4E8">($money);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Create zero price</span></span>
+<span class="line"><span style="color:#E1E4E8">$zero </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">zero</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">$zero </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">zero</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;EUR&#39;</span><span style="color:#E1E4E8">); </span><span style="color:#6A737D">// With specific currency</span></span>
+<span class="line"></span></code></pre>
+<h2>Price Operations</h2>
+<p>All price operations return new <code>Price</code> instances (immutable pattern):</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$price1 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">10.00</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">$price2 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">5.00</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Addition</span></span>
+<span class="line"><span style="color:#E1E4E8">$total </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $price1</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">plus</span><span style="color:#E1E4E8">($price2); </span><span style="color:#6A737D">// $15.00</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Subtraction</span></span>
+<span class="line"><span style="color:#E1E4E8">$difference </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $price1</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">subtract</span><span style="color:#E1E4E8">($price2); </span><span style="color:#6A737D">// $5.00</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Multiplication</span></span>
+<span class="line"><span style="color:#E1E4E8">$doubled </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $price1</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">multiplyBy</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">); </span><span style="color:#6A737D">// $20.00</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Division</span></span>
+<span class="line"><span style="color:#E1E4E8">$half </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $price1</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">divideBy</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">); </span><span style="color:#6A737D">// $5.00</span></span>
+<span class="line"></span></code></pre>
+<h3>Chaining Operations</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$finalPrice </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">100.00</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">multiplyBy</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">0.9</span><span style="color:#E1E4E8">)  </span><span style="color:#6A737D">// 10% discount</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">plus</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">5.00</span><span style="color:#E1E4E8">));  </span><span style="color:#6A737D">// Add shipping</span></span>
+<span class="line"><span style="color:#6A737D">// Result: $95.00</span></span>
+<span class="line"></span></code></pre>
+<h2>Formatting and Conversion</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$price </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1234.56</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get formatted string (locale-aware)</span></span>
+<span class="line"><span style="color:#E1E4E8">$formatted </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $price</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">formatted</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// &quot;$1,234.56&quot;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get raw numeric value</span></span>
+<span class="line"><span style="color:#E1E4E8">$amount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $price</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">toFloat</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// 1234.56</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// String representation (same as formatted)</span></span>
+<span class="line"><span style="color:#E1E4E8">$string </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">string</span><span style="color:#E1E4E8">) $price; </span><span style="color:#6A737D">// &quot;$1,234.56&quot;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get minor value (cents/smallest unit)</span></span>
+<span class="line"><span style="color:#E1E4E8">$cents </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $price</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getMinorValue</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// 123456</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get the underlying Brick/Money object</span></span>
+<span class="line"><span style="color:#E1E4E8">$money </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $price</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getMoney</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span></code></pre>
+<h2>Comparison</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$price1 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">10.00</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">$price2 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">20.00</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">$price3 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">10.00</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$price1</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">isLessThan</span><span style="color:#E1E4E8">($price2);      </span><span style="color:#6A737D">// true</span></span>
+<span class="line"><span style="color:#E1E4E8">$price1</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">isGreaterThan</span><span style="color:#E1E4E8">($price2);   </span><span style="color:#6A737D">// false</span></span>
+<span class="line"><span style="color:#E1E4E8">$price1</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">isEqualTo</span><span style="color:#E1E4E8">($price3);       </span><span style="color:#6A737D">// true</span></span>
+<span class="line"><span style="color:#E1E4E8">$price1</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">isZero</span><span style="color:#E1E4E8">();                 </span><span style="color:#6A737D">// false</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check for negative</span></span>
+<span class="line"><span style="color:#E1E4E8">$discount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">-</span><span style="color:#79B8FF">5.00</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">$discount</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">isNegative</span><span style="color:#E1E4E8">();           </span><span style="color:#6A737D">// true</span></span>
+<span class="line"><span style="color:#E1E4E8">$discount</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">isPositive</span><span style="color:#E1E4E8">();           </span><span style="color:#6A737D">// false</span></span>
+<span class="line"></span></code></pre>
+<h2>Working with Cart Totals</h2>
+<p>Cart methods return <code>Price</code> objects:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Facades\Cart</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// All return Price objects</span></span>
+<span class="line"><span style="color:#E1E4E8">$subtotal </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">subtotal</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">$total </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">total</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#E1E4E8">$taxableSubtotal </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">getTaxableSubtotal</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Format for display</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&quot;Subtotal: &quot;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">.</span><span style="color:#E1E4E8"> $subtotal</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">formatted</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&quot;Total: &quot;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">.</span><span style="color:#E1E4E8"> $total</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">formatted</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span></code></pre>
+<h2>Item Price Methods</h2>
+<p><code>CartItem</code> provides several price-related methods:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$item </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">item</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item-123&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Unit price (single item)</span></span>
+<span class="line"><span style="color:#E1E4E8">$unitPrice </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">unitPrice</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// Price object</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Subtotal (unit price * quantity)</span></span>
+<span class="line"><span style="color:#E1E4E8">$subtotal </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">subtotal</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// Price object</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Total (subtotal + conditions applied)</span></span>
+<span class="line"><span style="color:#E1E4E8">$total </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">total</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// Price object</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get condition adjustments</span></span>
+<span class="line"><span style="color:#E1E4E8">$adjustments </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">conditionsTotal</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// Price object</span></span>
+<span class="line"></span></code></pre>
+<h2>Currency Handling</h2>
+<p>Prices respect the configured currency:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Set in config/flexicart.php</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;currency&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;USD&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;locale&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;en_US&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Or per-price</span></span>
+<span class="line"><span style="color:#E1E4E8">$euroPrice </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">49.99</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;EUR&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">$euroPrice</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">formatted</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// &quot;49,99 EUR&quot; (varies by locale)</span></span>
+<span class="line"></span></code></pre>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Always use Price objects</strong> - Never store or calculate with raw floats</li>
+<li><strong>Use formatted() for display</strong> - Ensures proper currency formatting</li>
+<li><strong>Use toFloat() for APIs</strong> - When you need a numeric value for external systems</li>
+<li><strong>Compare with methods</strong> - Use <code>isEqualTo()</code> instead of <code>==</code> for accuracy</li>
+<li><strong>Handle currencies explicitly</strong> - Be aware of currency mismatches in operations</li>
+</ol>

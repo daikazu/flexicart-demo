@@ -1,0 +1,152 @@
+<h1>Basic Usage</h1>
+<p>FlexiCart provides a simple, fluent API for managing shopping cart operations. All interactions go through the <code>Cart</code> facade.</p>
+<h2>Adding Items to the Cart</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Facades\Cart</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add a single item</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Product Name&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">29.99</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;attributes&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;color&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;red&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;size&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;large&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add multiple items at once</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Another Product&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">15.50</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">1</span></span>
+<span class="line"><span style="color:#E1E4E8">    ],</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Third Product&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">45.00</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">3</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span></code></pre>
+<h3>Item Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>string|int</td>
+<td>Yes</td>
+<td>Unique identifier for the item</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Display name of the item</td>
+</tr>
+<tr>
+<td><code>price</code></td>
+<td>float</td>
+<td>Yes</td>
+<td>Unit price of the item</td>
+</tr>
+<tr>
+<td><code>quantity</code></td>
+<td>int</td>
+<td>No</td>
+<td>Quantity to add (default: 1)</td>
+</tr>
+<tr>
+<td><code>attributes</code></td>
+<td>array</td>
+<td>No</td>
+<td>Custom attributes (color, size, etc.)</td>
+</tr>
+<tr>
+<td><code>taxable</code></td>
+<td>bool</td>
+<td>No</td>
+<td>Whether item is taxable (default: true)</td>
+</tr>
+</tbody>
+</table>
+<h2>Updating Items in the Cart</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Update quantity</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">updateItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, [</span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Update attributes</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">updateItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, [</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;attributes&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;color&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;blue&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;size&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;medium&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Update multiple properties at once</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">updateItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, [</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">25.99</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;attributes&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span><span style="color:#9ECBFF">&#39;color&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;green&#39;</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span></code></pre>
+<h2>Removing Items from the Cart</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Remove a specific item</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">removeItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Clear all items from the cart (keeps conditions)</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">clear</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Clear all items AND conditions from cart</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">reset</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span></code></pre>
+<h2>Getting Cart Content and Calculations</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Get all items as a Collection</span></span>
+<span class="line"><span style="color:#E1E4E8">$items </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">items</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get a specific item by ID</span></span>
+<span class="line"><span style="color:#E1E4E8">$item </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">item</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get cart counts</span></span>
+<span class="line"><span style="color:#E1E4E8">$totalItems </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">count</span><span style="color:#E1E4E8">();        </span><span style="color:#6A737D">// Total quantity of all items</span></span>
+<span class="line"><span style="color:#E1E4E8">$uniqueItems </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">uniqueCount</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// Number of unique items</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check if cart is empty</span></span>
+<span class="line"><span style="color:#E1E4E8">$isEmpty </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">isEmpty</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get cart totals (returns Price objects)</span></span>
+<span class="line"><span style="color:#E1E4E8">$subtotal </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">subtotal</span><span style="color:#E1E4E8">();              </span><span style="color:#6A737D">// Subtotal before conditions</span></span>
+<span class="line"><span style="color:#E1E4E8">$total </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">total</span><span style="color:#E1E4E8">();                     </span><span style="color:#6A737D">// Final total after all conditions</span></span>
+<span class="line"><span style="color:#E1E4E8">$taxableSubtotal </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">getTaxableSubtotal</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// Subtotal of taxable items only</span></span>
+<span class="line"></span></code></pre>
+<h2>Working with Cart Items</h2>
+<p>Each cart item is a <code>CartItem</code> object with the following properties:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$item </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">item</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">id;          </span><span style="color:#6A737D">// Item identifier</span></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">name;        </span><span style="color:#6A737D">// Item name</span></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">price;       </span><span style="color:#6A737D">// Unit price (Price object)</span></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">quantity;    </span><span style="color:#6A737D">// Current quantity</span></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">attributes;  </span><span style="color:#6A737D">// Fluent object with custom attributes</span></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">taxable;     </span><span style="color:#6A737D">// Whether item is taxable</span></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">conditions;  </span><span style="color:#6A737D">// Collection of item conditions</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get calculated values</span></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">unitPrice</span><span style="color:#E1E4E8">();   </span><span style="color:#6A737D">// Price per unit</span></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">subtotal</span><span style="color:#E1E4E8">();    </span><span style="color:#6A737D">// Total for this item (price × quantity + conditions)</span></span>
+<span class="line"></span></code></pre>
+<h2>Next Steps</h2>
+<ul>
+<li>Learn about <a href="/docs?section=conditions">Conditions</a> to apply discounts and fees</li>
+<li>Explore the <a href="/docs?section=rules-engine">Rules Engine</a> for advanced promotions</li>
+<li>See <a href="/docs?section=configuration">Configuration</a> for storage and currency options</li>
+</ul>

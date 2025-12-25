@@ -1,0 +1,232 @@
+<h1>Configuration</h1>
+<p>FlexiCart provides extensive configuration options via the <code>config/flexicart.php</code> file.</p>
+<h2>Publishing Configuration</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">vendor:publish</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">--tag=</span><span style="color:#9ECBFF">&quot;flexicart-config&quot;</span></span>
+<span class="line"></span></code></pre>
+<h2>Storage Configuration</h2>
+<p>Configure how cart data is stored:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// config/flexicart.php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Use session storage (default)</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;storage&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;session&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Use database storage</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;storage&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;database&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Use custom storage class</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;storage_class&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">App\Services\CustomCartStorage</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"></span></code></pre>
+<h3>Session Key</h3>
+<p>Customize the session key when using session storage:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#9ECBFF">&#39;session_key&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;my_custom_cart_key&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"></span></code></pre>
+<h3>Database Storage</h3>
+<p>When using database storage, run the migrations first:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">vendor:publish</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">--tag=</span><span style="color:#9ECBFF">&quot;flexicart-migrations&quot;</span></span>
+<span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">migrate</span></span>
+<span class="line"></span></code></pre>
+<p>Update your <code>.env</code> file:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#FFAB70">CART_STORAGE</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">database</span></span>
+<span class="line"></span></code></pre>
+<p>When using database storage, FlexiCart creates the following tables:</p>
+<ul>
+<li><code>carts</code>: Stores cart metadata (ID, user association, timestamps)</li>
+<li><code>cart_items</code>: Stores individual cart items and their properties</li>
+</ul>
+<h3>Cart Persistence</h3>
+<p>With database storage, carts are automatically persisted. You can also manually persist session-based carts:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Manually persist cart data</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">persist</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get raw cart data for custom storage</span></span>
+<span class="line"><span style="color:#E1E4E8">$cartData </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">getRawCartData</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span></code></pre>
+<h3>Multiple Carts</h3>
+<p>You can work with multiple carts by specifying cart IDs:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Get a specific cart</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">getCartById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;user_123_cart&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Switch to a different cart</span></span>
+<span class="line"><span style="color:#E1E4E8">$guestCart </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">getCartById</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;guest_cart&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<h2>Currency and Locale</h2>
+<p>Set the default currency and locale for price formatting:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#9ECBFF">&#39;currency&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;USD&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// ISO currency code</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;locale&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;en_US&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// Locale for formatting</span></span>
+<span class="line"></span></code></pre>
+<h2>Custom Models</h2>
+<p>When using database storage, you can specify custom models:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#9ECBFF">&#39;cart_model&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">App\Models\CustomCart</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;cart_item_model&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">App\Models\CustomCartItem</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"></span></code></pre>
+<h2>Compound Discounts</h2>
+<p>Control how multiple discounts are calculated:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Sequential calculation (each discount applies to the result of previous discounts)</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;compound_discounts&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Parallel calculation (all discounts apply to the original price)</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;compound_discounts&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"></span></code></pre>
+<p><strong>Example with $100 subtotal and two 10% discounts:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Calculation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sequential (true)</td>
+<td>$100 - 10% = $90, then $90 - 10% = $81</td>
+<td>$81.00</td>
+</tr>
+<tr>
+<td>Parallel (false)</td>
+<td>$100 - 10% - 10% = $80</td>
+<td>$80.00</td>
+</tr>
+</tbody>
+</table>
+<h2>Cart Cleanup</h2>
+<p>Configure automatic cleanup of old carts when using database storage:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#9ECBFF">&#39;cleanup&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;enabled&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;lifetime&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">60</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">24</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">7</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// 1 week in minutes</span></span>
+<span class="line"><span style="color:#E1E4E8">],</span></span>
+<span class="line"></span></code></pre>
+<h2>Events</h2>
+<p>Enable or disable cart lifecycle events:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#9ECBFF">&#39;events&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;enabled&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CART_EVENTS_ENABLED&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">],</span></span>
+<span class="line"></span></code></pre>
+<p>See <a href="EVENTS.md">Events</a> for detailed event documentation.</p>
+<h2>Merge Settings</h2>
+<p>Configure default cart merging behavior:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#9ECBFF">&#39;merge&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Default merge strategy: &#39;sum&#39;, &#39;replace&#39;, &#39;max&#39;, &#39;keep_target&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;default_strategy&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CART_MERGE_STRATEGY&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;sum&#39;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Whether to clear the source cart after merging</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;delete_source&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CART_MERGE_DELETE_SOURCE&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">],</span></span>
+<span class="line"></span></code></pre>
+<p>See <a href="MERGING.md">Merging</a> for detailed merge documentation.</p>
+<h2>Full Configuration Reference</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">&lt;?</span><span style="color:#79B8FF">php</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">return</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">/*</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    | Storage Driver</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    | The storage driver to use for persisting cart data.</span></span>
+<span class="line"><span style="color:#6A737D">    | Options: &#39;session&#39;, &#39;database&#39;</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    */</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;storage&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CART_STORAGE&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;session&#39;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">/*</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    | Custom Storage Class</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    | Optionally specify a custom storage class that implements StorageInterface.</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    */</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;storage_class&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">null</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">/*</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    | Session Key</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    | The session key used to store cart data when using session storage.</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    */</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;session_key&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;flexicart&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">/*</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    | Currency</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    | The default currency for price calculations (ISO 4217 code).</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    */</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;currency&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CART_CURRENCY&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;USD&#39;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">/*</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    | Locale</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    | The locale used for price formatting.</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    */</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;locale&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CART_LOCALE&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;en_US&#39;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">/*</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    | Compound Discounts</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    | When true, discounts are applied sequentially (compounding).</span></span>
+<span class="line"><span style="color:#6A737D">    | When false, all discounts are calculated on the original price.</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    */</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;compound_discounts&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">/*</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    | Custom Models</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    | Override the default Eloquent models when using database storage.</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    */</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;cart_model&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">null</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;cart_item_model&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">null</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">/*</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    | Cart Cleanup</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    | Automatic cleanup of old/abandoned carts (database storage only).</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    */</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;cleanup&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;enabled&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;lifetime&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">60</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">24</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">7</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// 1 week in minutes</span></span>
+<span class="line"><span style="color:#E1E4E8">    ],</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">/*</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    | Events</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    | Enable or disable cart event dispatching.</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    */</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;events&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;enabled&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CART_EVENTS_ENABLED&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    ],</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">/*</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    | Merge Settings</span></span>
+<span class="line"><span style="color:#6A737D">    |--------------------------------------------------------------------------</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    | Default settings for cart merging operations.</span></span>
+<span class="line"><span style="color:#6A737D">    |</span></span>
+<span class="line"><span style="color:#6A737D">    */</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;merge&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;default_strategy&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CART_MERGE_STRATEGY&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;sum&#39;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;delete_source&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CART_MERGE_DELETE_SOURCE&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">    ],</span></span>
+<span class="line"><span style="color:#E1E4E8">];</span></span>
+<span class="line"></span></code></pre>

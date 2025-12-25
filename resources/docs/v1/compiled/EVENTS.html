@@ -1,0 +1,271 @@
+<h1>Cart Events</h1>
+<p>FlexiCart dispatches Laravel events for various cart actions, enabling you to hook into the cart lifecycle for analytics, inventory management, logging, and other integrations.</p>
+<h2>Configuration</h2>
+<p>Events are enabled by default. You can disable them in your config:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// config/flexicart.php</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;events&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;enabled&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;CART_EVENTS_ENABLED&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"><span style="color:#E1E4E8">],</span></span>
+<span class="line"></span></code></pre>
+<h2>Available Events</h2>
+<p>All events extend <code>Daikazu\Flexicart\Events\CartEvent</code> and include:</p>
+<ul>
+<li><code>cartId</code> - The cart identifier</li>
+<li><code>occurredAt</code> - A <code>DateTimeImmutable</code> timestamp</li>
+</ul>
+<h3>Item Events</h3>
+<h4><code>ItemAdded</code></h4>
+<p>Dispatched when a new item is added to the cart.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemAdded</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemAdded</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ItemAdded</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Item added: {</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">name</span><span style="color:#9ECBFF">}&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;item (CartItem instance)</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;occurredAt</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h4><code>ItemQuantityUpdated</code></h4>
+<p>Dispatched when an existing item's quantity is increased (adding the same item again).</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemQuantityUpdated</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemQuantityUpdated</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ItemQuantityUpdated</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Quantity changed from {</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">oldQuantity</span><span style="color:#9ECBFF">} to {</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">newQuantity</span><span style="color:#9ECBFF">}&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;item (CartItem instance)</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;oldQuantity</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;newQuantity</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h4><code>ItemUpdated</code></h4>
+<p>Dispatched when an item's attributes are updated.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemUpdated</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemUpdated</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ItemUpdated</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Item updated&quot;</span><span style="color:#E1E4E8">, $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">changes);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;item (CartItem instance with new values)</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;changes (array of changed attributes)</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h4><code>ItemRemoved</code></h4>
+<p>Dispatched when an item is removed from the cart.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemRemoved</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemRemoved</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ItemRemoved</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Release inventory reservation</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">InventoryService</span><span style="color:#F97583">::</span><span style="color:#B392F0">release</span><span style="color:#E1E4E8">($event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">id, $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">quantity);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;item (the removed CartItem)</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h3>Cart Events</h3>
+<h4><code>CartCleared</code></h4>
+<p>Dispatched when all items are cleared from the cart (conditions remain).</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\CartCleared</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">CartCleared</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">CartCleared</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">foreach</span><span style="color:#E1E4E8"> ($event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">items </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> $item) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#79B8FF">InventoryService</span><span style="color:#F97583">::</span><span style="color:#B392F0">release</span><span style="color:#E1E4E8">($item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">id, $item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">quantity);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;items (Collection of cleared CartItems)</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h4><code>CartReset</code></h4>
+<p>Dispatched when the cart is completely reset (items AND conditions cleared).</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\CartReset</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">CartReset</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">CartReset</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Cart reset: {</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">items</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">count</span><span style="color:#9ECBFF">()} items, {</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">conditions</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">count</span><span style="color:#9ECBFF">()} conditions cleared&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;items (Collection of cleared CartItems)</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;conditions (Collection of cleared conditions)</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h3>Condition Events</h3>
+<h4><code>ConditionAdded</code></h4>
+<p>Dispatched when a global condition is added to the cart.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ConditionAdded</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ConditionAdded</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ConditionAdded</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ($event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">replaced) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Condition replaced: {</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">condition</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">name</span><span style="color:#9ECBFF">}&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Condition added: {</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">condition</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">name</span><span style="color:#9ECBFF">}&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;condition (ConditionInterface instance)</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;replaced (bool - true if condition with same name was replaced)</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h4><code>ConditionRemoved</code></h4>
+<p>Dispatched when a global condition is removed.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ConditionRemoved</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ConditionRemoved</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ConditionRemoved</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Condition removed: {</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">condition</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">name</span><span style="color:#9ECBFF">}&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;condition (the removed condition)</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h4><code>ConditionsCleared</code></h4>
+<p>Dispatched when all global conditions are cleared.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ConditionsCleared</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ConditionsCleared</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ConditionsCleared</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;All conditions cleared: {</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">conditions</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">count</span><span style="color:#9ECBFF">()} total&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;conditions (Collection of cleared conditions)</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h3>Item Condition Events</h3>
+<h4><code>ItemConditionAdded</code></h4>
+<p>Dispatched when a condition is added to a specific item.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemConditionAdded</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemConditionAdded</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ItemConditionAdded</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Condition &#39;{</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">condition</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">name</span><span style="color:#9ECBFF">}&#39; added to item &#39;{</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">name</span><span style="color:#9ECBFF">}&#39;&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;item (CartItem instance)</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;condition (ConditionInterface instance)</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h4><code>ItemConditionRemoved</code></h4>
+<p>Dispatched when a condition is removed from a specific item.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemConditionRemoved</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemConditionRemoved</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ItemConditionRemoved</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Condition &#39;{</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">conditionName</span><span style="color:#9ECBFF">}&#39; removed from item &#39;{</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">name</span><span style="color:#9ECBFF">}&#39;&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;item (CartItem instance)</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;conditionName (string)</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h2>Use Cases</h2>
+<h3>Inventory Management</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemAdded</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemRemoved</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemQuantityUpdated</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Reserve inventory when items are added</span></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemAdded</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ItemAdded</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">InventoryService</span><span style="color:#F97583">::</span><span style="color:#B392F0">reserve</span><span style="color:#E1E4E8">($event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">id, $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">quantity);</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Update reservation when quantity changes</span></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemQuantityUpdated</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ItemQuantityUpdated</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    $difference </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">newQuantity </span><span style="color:#F97583">-</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">oldQuantity;</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ($difference </span><span style="color:#F97583">&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#79B8FF">InventoryService</span><span style="color:#F97583">::</span><span style="color:#B392F0">reserve</span><span style="color:#E1E4E8">($event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">id, $difference);</span></span>
+<span class="line"><span style="color:#E1E4E8">    } </span><span style="color:#F97583">else</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#79B8FF">InventoryService</span><span style="color:#F97583">::</span><span style="color:#B392F0">release</span><span style="color:#E1E4E8">($event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">id, </span><span style="color:#79B8FF">abs</span><span style="color:#E1E4E8">($difference));</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Release inventory when items are removed</span></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemRemoved</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ItemRemoved</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">InventoryService</span><span style="color:#F97583">::</span><span style="color:#B392F0">release</span><span style="color:#E1E4E8">($event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">id, $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">quantity);</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h3>Analytics Tracking</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemAdded</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\CartCleared</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemAdded</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ItemAdded</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Analytics</span><span style="color:#F97583">::</span><span style="color:#B392F0">track</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;add_to_cart&#39;</span><span style="color:#E1E4E8">, [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">id,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;item_name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">name,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">price</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">toFloat</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">quantity,</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]);</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">CartCleared</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">CartCleared</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Analytics</span><span style="color:#F97583">::</span><span style="color:#B392F0">track</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;cart_abandoned&#39;</span><span style="color:#E1E4E8">, [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;cart_id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">cartId,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;items_count&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">items</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">count</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]);</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h3>Notifications</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ConditionAdded</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ConditionAdded</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">ConditionAdded</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">str_contains</span><span style="color:#E1E4E8">($event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">condition</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">name, </span><span style="color:#9ECBFF">&#39;promo&#39;</span><span style="color:#E1E4E8">)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#B392F0">session</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">flash</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;success&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&quot;Promo code applied: {</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">condition</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">formattedValue</span><span style="color:#9ECBFF">()}&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h2>Queued Listeners</h2>
+<p>For performance, you can queue event listeners:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">namespace</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">App\Listeners</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemAdded</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Illuminate\Contracts\Queue\ShouldQueue</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">SyncInventory</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">implements</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">ShouldQueue</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">handle</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemAdded</span><span style="color:#E1E4E8"> $event)</span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">void</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#6A737D">// This runs asynchronously</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#79B8FF">InventoryService</span><span style="color:#F97583">::</span><span style="color:#B392F0">syncReservation</span><span style="color:#E1E4E8">($event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">id);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span></code></pre>
+<h2>Event Subscribers</h2>
+<p>You can also use Laravel's event subscriber pattern:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">namespace</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">App\Listeners</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemAdded</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemRemoved</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Illuminate\Events\Dispatcher</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">CartEventSubscriber</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">handleItemAdded</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemAdded</span><span style="color:#E1E4E8"> $event)</span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">void</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#6A737D">// Handle item added</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">handleItemRemoved</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">ItemRemoved</span><span style="color:#E1E4E8"> $event)</span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">void</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#6A737D">// Handle item removed</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">subscribe</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">Dispatcher</span><span style="color:#E1E4E8"> $events)</span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">array</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#79B8FF">ItemAdded</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;handleItemAdded&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#79B8FF">ItemRemoved</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;handleItemRemoved&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        ];</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span></code></pre>
+<p>Register in <code>EventServiceProvider</code>:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">protected</span><span style="color:#E1E4E8"> $subscribe </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">\App\Listeners\CartEventSubscriber</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">];</span></span>
+<span class="line"></span></code></pre>

@@ -1,0 +1,325 @@
+<a href="https://mikewall.dev">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="art/header-dark.png">
+  <img alt="Logo for Flexi Cart" src="art/header-light.png">
+</picture>
+</a>
+<h1>FlexiCart</h1>
+<p><a href="https://packagist.org/packages/daikazu/flexicart"><img src="https://img.shields.io/packagist/php-v/daikazu/flexicart?style=flat-square" alt="PHP Version Require" /></a>
+<a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-11%2B-red?style=flat-square&amp;logo=laravel" alt="Laravel Version" /></a>
+<a href="https://packagist.org/packages/daikazu/flexicart"><img src="https://img.shields.io/packagist/v/daikazu/flexicart.svg?style=flat-square" alt="Latest Version on Packagist" /></a>
+<a href="https://github.com/daikazu/flexicart/actions?query=workflow%3Arun-tests+branch%3Amain"><img src="https://img.shields.io/github/actions/workflow/status/daikazu/flexicart/run-tests.yml?branch=main&amp;label=tests&amp;style=flat-square" alt="GitHub Tests Action Status" /></a>
+<a href="https://github.com/daikazu/flexicart/actions?query=workflow%3A%22Fix+PHP+code+style+issues%22+branch%3Amain"><img src="https://img.shields.io/github/actions/workflow/status/daikazu/flexicart/phpstan.yml?branch=main&amp;label=PHPStan&amp;=flat-square" alt="PHPStan" /></a>
+<a href="https://packagist.org/packages/daikazu/flexicart"><img src="https://img.shields.io/packagist/dt/daikazu/flexicart.svg?style=flat-square" alt="Total Downloads" /></a>
+<a href="https://github.com/daikazu/flexicart/network"><img src="https://img.shields.io/github/forks/daikazu/flexicart?style=flat-square" alt="GitHub forks" /></a>
+<a href="https://github.com/daikazu/flexicart/stargazers"><img src="https://img.shields.io/github/stars/daikazu/flexicart?style=flat-square" alt="GitHub stars" /></a></p>
+<p>A flexible shopping cart package for Laravel with support for session or database storage, conditional pricing, cart merging, rules engine, and custom product attributes.</p>
+<h2>Table of Contents</h2>
+<ul>
+<li><a href="#features">Features</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#basic-usage">Basic Usage</a>
+<ul>
+<li><a href="#adding-items-to-the-cart">Adding Items</a></li>
+<li><a href="#updating-items-in-the-cart">Updating Items</a></li>
+<li><a href="#removing-items-from-the-cart">Removing Items</a></li>
+<li><a href="#getting-cart-content-and-calculations">Cart Totals</a></li>
+</ul>
+</li>
+<li><a href="#conditions">Conditions</a>
+<ul>
+<li><a href="#understanding-conditions">Understanding Conditions</a></li>
+<li><a href="#adding-conditions">Adding Conditions</a></li>
+<li><a href="#removing-conditions">Removing Conditions</a></li>
+<li><a href="#marking-items-as-non-taxable">Non-Taxable Items</a></li>
+</ul>
+</li>
+<li><a href="#documentation">Documentation</a></li>
+<li><a href="#testing">Testing</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#changelog">Changelog</a></li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#security-vulnerabilities">Security Vulnerabilities</a></li>
+<li><a href="#credits">Credits</a></li>
+<li><a href="#license">License</a></li>
+</ul>
+<h2>Features</h2>
+<ul>
+<li><strong>Flexible Storage</strong>: Use session storage (default) or database storage</li>
+<li><strong>Cart Item Conditions</strong>: Apply discounts, fees, or any adjustments to items
+<ul>
+<li>Percentage-based adjustments (e.g., 10% discount)</li>
+<li>Fixed-amount adjustments (e.g., $5 off, $2 add-on fee)</li>
+<li>Stack multiple conditions on the same item</li>
+</ul>
+</li>
+<li><strong>Rules Engine</strong>: Advanced promotional rules with cart context access
+<ul>
+<li>Buy X Get Y deals</li>
+<li>Threshold-based discounts</li>
+<li>Tiered volume discounts</li>
+<li>Quantity-based rules</li>
+</ul>
+</li>
+<li><strong>Cart Merging</strong>: Flexible strategies for merging carts (guest to user, wishlist to cart)</li>
+<li><strong>Event System</strong>: Hook into cart lifecycle for analytics, inventory, and integrations</li>
+<li><strong>Custom Product Attributes</strong>: Store any item-specific attributes (color, size, etc.)</li>
+<li><strong>Global Cart Conditions</strong>: Apply conditions to the cart subtotal or only to taxable items</li>
+<li><strong>Precise Price Handling</strong>: Uses Brick/Money for accurate currency calculations</li>
+<li><strong>Taxable Item Support</strong>: Mark specific items as taxable or non-taxable</li>
+<li><strong>Easy Integration</strong>: Simple API with Laravel Facade</li>
+</ul>
+<h2>Installation</h2>
+<h3>Requirements</h3>
+<ul>
+<li>PHP 8.3 or higher</li>
+<li>Laravel 11.0 or higher</li>
+<li>Brick/Money package (automatically installed)</li>
+</ul>
+<h3>Install the Package</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#B392F0">composer</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">require</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">daikazu/flexicart</span></span>
+<span class="line"></span></code></pre>
+<h3>Publish Configuration</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">vendor:publish</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">--tag=</span><span style="color:#9ECBFF">&quot;flexicart-config&quot;</span></span>
+<span class="line"></span></code></pre>
+<h3>Database Storage (Optional)</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">vendor:publish</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">--tag=</span><span style="color:#9ECBFF">&quot;flexicart-migrations&quot;</span></span>
+<span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">migrate</span></span>
+<span class="line"></span></code></pre>
+<p>Then update your <code>.env</code> file:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#FFAB70">CART_STORAGE</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">database</span></span>
+<span class="line"></span></code></pre>
+<h2>Basic Usage</h2>
+<h3>Adding Items to the Cart</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Facades\Cart</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add item as array</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Product Name&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">29.99</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;attributes&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;color&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;red&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;size&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;large&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add multiple items at once</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Another Product&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">15.50</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">1</span></span>
+<span class="line"><span style="color:#E1E4E8">    ],</span></span>
+<span class="line"><span style="color:#E1E4E8">    [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Third Product&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">45.00</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">3</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span></code></pre>
+<h3>Updating Items in the Cart</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Update quantity</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">updateItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, [</span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Update attributes</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">updateItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, [</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;attributes&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;color&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;blue&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;size&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;medium&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Update multiple properties</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">updateItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, [</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">25.99</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;attributes&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span><span style="color:#9ECBFF">&#39;color&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;green&#39;</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span></code></pre>
+<h3>Removing Items from the Cart</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Remove a specific item</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">removeItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Clear all items from the cart</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">clear</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Clear all items and conditions from cart</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">reset</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span></code></pre>
+<h3>Getting Cart Content and Calculations</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Get all items</span></span>
+<span class="line"><span style="color:#E1E4E8">$items </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">items</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get a specific item</span></span>
+<span class="line"><span style="color:#E1E4E8">$item </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">item</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get cart counts</span></span>
+<span class="line"><span style="color:#E1E4E8">$totalItems </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">count</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// Total quantity of all items</span></span>
+<span class="line"><span style="color:#E1E4E8">$uniqueItems </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">uniqueCount</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// Number of unique items</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check if cart is empty</span></span>
+<span class="line"><span style="color:#E1E4E8">$isEmpty </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">isEmpty</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get cart totals</span></span>
+<span class="line"><span style="color:#E1E4E8">$subtotal </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">subtotal</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// Subtotal before conditions</span></span>
+<span class="line"><span style="color:#E1E4E8">$total </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">total</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// Final total after all conditions</span></span>
+<span class="line"><span style="color:#E1E4E8">$taxableSubtotal </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">getTaxableSubtotal</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// Subtotal of taxable items only</span></span>
+<span class="line"></span></code></pre>
+<h2>Conditions</h2>
+<h3>Understanding Conditions</h3>
+<p>Conditions are adjustments that can be applied to cart items or the entire cart:</p>
+<ul>
+<li><strong>Percentage Conditions</strong>: Apply percentage-based adjustments (e.g., 10% discount)</li>
+<li><strong>Fixed Conditions</strong>: Apply fixed-amount adjustments (e.g., $5 off)</li>
+<li><strong>Tax Conditions</strong>: Special conditions for tax calculations</li>
+</ul>
+<p>Conditions can target:</p>
+<ul>
+<li><strong>Individual Items</strong>: Applied to specific cart items</li>
+<li><strong>Cart Subtotal</strong>: Applied to the entire cart subtotal</li>
+<li><strong>Taxable Items</strong>: Applied only to items marked as taxable</li>
+</ul>
+<h3>Adding Conditions</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Types\PercentageCondition</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Types\FixedCondition</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Enums\ConditionTarget</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add a 10% discount to the cart</span></span>
+<span class="line"><span style="color:#E1E4E8">$discount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;10% Off Sale&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// Negative for discount</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">SUBTOTAL</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addCondition</span><span style="color:#E1E4E8">($discount);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add a $5 shipping fee</span></span>
+<span class="line"><span style="color:#E1E4E8">$shipping </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">FixedCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Shipping Fee&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">5.00</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">SUBTOTAL</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addCondition</span><span style="color:#E1E4E8">($shipping);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add condition to a specific item</span></span>
+<span class="line"><span style="color:#E1E4E8">$itemDiscount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Item Discount&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">20</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">ITEM</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItemCondition</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, $itemDiscount);</span></span>
+<span class="line"></span></code></pre>
+<h3>Removing Conditions</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Remove a specific condition from the cart</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">removeCondition</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;10% Off Sale&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Remove a condition from a specific item</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">removeItemCondition</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;Item Discount&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Clear all cart conditions</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">clearConditions</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span></code></pre>
+<h3>Marking Items as Non-Taxable</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Add non-taxable item</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Non-taxable Service&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">100.00</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;taxable&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">false</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Update existing item to be non-taxable</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">updateItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, [</span><span style="color:#9ECBFF">&#39;taxable&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span></code></pre>
+<h2>Documentation</h2>
+<p>For detailed documentation on specific features, see the following guides:</p>
+<table>
+<thead>
+<tr>
+<th>Guide</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="docs/CONFIGURATION.md">Configuration</a></td>
+<td>Storage options, currency settings, cleanup, and all config options</td>
+</tr>
+<tr>
+<td><a href="docs/RULES_ENGINE.md">Rules Engine</a></td>
+<td>Advanced promotional rules: Buy X Get Y, thresholds, tiered discounts</td>
+</tr>
+<tr>
+<td><a href="docs/MERGING.md">Cart Merging</a></td>
+<td>Merge strategies for guest-to-user carts, wishlists, and cart recovery</td>
+</tr>
+<tr>
+<td><a href="docs/EVENTS.md">Events</a></td>
+<td>Cart lifecycle events for analytics, inventory, and integrations</td>
+</tr>
+<tr>
+<td><a href="docs/PRICES.md">Working with Prices</a></td>
+<td>Price object API, arithmetic operations, and formatting</td>
+</tr>
+<tr>
+<td><a href="docs/BLADE.md">Blade Templates</a></td>
+<td>Examples for displaying cart data in Blade views</td>
+</tr>
+<tr>
+<td><a href="docs/EXTENDING.md">Extending FlexiCart</a></td>
+<td>Custom conditions, storage drivers, models, and merge strategies</td>
+</tr>
+</tbody>
+</table>
+<h2>Testing</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#B392F0">composer</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">test</span></span>
+<span class="line"></span></code></pre>
+<h2>Troubleshooting</h2>
+<h3>Common Issues</h3>
+<p><strong>Cart data not persisting between requests</strong></p>
+<ul>
+<li>Ensure sessions are properly configured in your Laravel application</li>
+<li>If using database storage, verify migrations have been run</li>
+<li>Check that the <code>CART_STORAGE</code> environment variable is set correctly</li>
+</ul>
+<p><strong>Price calculation errors</strong></p>
+<ul>
+<li>Verify that all price values are numeric</li>
+<li>Ensure currency codes are valid ISO codes</li>
+</ul>
+<p><strong>Condition not applying correctly</strong></p>
+<ul>
+<li>Verify condition targets are set appropriately</li>
+<li>Check condition order values if multiple conditions exist</li>
+<li>Ensure condition values are properly signed (negative for discounts)</li>
+</ul>
+<p><strong>Memory issues with large carts</strong></p>
+<ul>
+<li>Consider implementing cart item limits</li>
+<li>Don't use session storage due to cookie size limits</li>
+<li>Use database storage for better memory management</li>
+<li>Implement cart cleanup for old/abandoned carts</li>
+</ul>
+<h2>Changelog</h2>
+<p>Please see <a href="CHANGELOG.md">CHANGELOG</a> for more information on what has changed recently.</p>
+<h2>Future Roadmap</h2>
+<ul>
+<li>Built-in coupon code support</li>
+<li>Advanced reporting and analytics</li>
+<li>REST API endpoints</li>
+</ul>
+<h2>Contributing</h2>
+<p>Please see <a href="CONTRIBUTING.md">CONTRIBUTING</a> for details.</p>
+<h2>Security Vulnerabilities</h2>
+<p>Please review <a href="../../security/policy">our security policy</a> on how to report security vulnerabilities.</p>
+<h2>Credits</h2>
+<ul>
+<li><a href="https://github.com/daikazu">Mike Wall</a></li>
+<li><a href="../../contributors">All Contributors</a></li>
+</ul>
+<h2>License</h2>
+<p>The MIT License (MIT). Please see <a href="LICENSE.md">License File</a> for more information.</p>

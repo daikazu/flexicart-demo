@@ -1,0 +1,33 @@
+<h1>Installation</h1>
+<h2>Requirements</h2>
+<ul>
+<li>PHP 8.3 or higher</li>
+<li>Laravel 11.0 or higher</li>
+<li>Brick/Money package (automatically installed)</li>
+</ul>
+<h2>Install the Package</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#B392F0">composer</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">require</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">daikazu/flexicart</span></span>
+<span class="line"></span></code></pre>
+<h2>Publish Configuration</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">vendor:publish</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">--tag=</span><span style="color:#9ECBFF">&quot;flexicart-config&quot;</span></span>
+<span class="line"></span></code></pre>
+<h2>Database Storage (Optional)</h2>
+<p>If you prefer database storage over session storage:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">vendor:publish</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">--tag=</span><span style="color:#9ECBFF">&quot;flexicart-migrations&quot;</span></span>
+<span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">migrate</span></span>
+<span class="line"></span></code></pre>
+<p>Then update your <code>.env</code> file:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#FFAB70">CART_STORAGE</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">database</span></span>
+<span class="line"></span></code></pre>
+<h2>Next Steps</h2>
+<p>Once installed, you can start using the Cart facade to add items:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Facades\Cart</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Product Name&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">29.99</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">1</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span></code></pre>
+<p>See the <a href="/docs?section=basic-usage">Basic Usage</a> section for more details.</p>

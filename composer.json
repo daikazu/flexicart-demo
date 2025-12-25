@@ -10,10 +10,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "daikazu/flexicart" : "dev-dev",
+        "daikazu/flexicart": "dev-dev",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "livewire/livewire": "^3.7"
+        "livewire/livewire": "^3.7",
+        "spatie/shiki-php": "^2.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

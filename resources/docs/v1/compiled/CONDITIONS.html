@@ -1,0 +1,136 @@
+<h1>Conditions</h1>
+<p>Conditions are adjustments that can be applied to cart items or the entire cart. They enable discounts, fees, taxes, and other price modifications.</p>
+<h2>Understanding Conditions</h2>
+<p>FlexiCart supports several types of conditions:</p>
+<ul>
+<li><strong>Percentage Conditions</strong>: Apply percentage-based adjustments (e.g., 10% discount)</li>
+<li><strong>Fixed Conditions</strong>: Apply fixed-amount adjustments (e.g., $5 off, $2.99 shipping)</li>
+<li><strong>Tax Conditions</strong>: Special conditions for tax calculations on taxable items</li>
+</ul>
+<h3>Condition Targets</h3>
+<p>Conditions can target different parts of the cart:</p>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ITEM</code></td>
+<td>Applied to a specific cart item</td>
+</tr>
+<tr>
+<td><code>SUBTOTAL</code></td>
+<td>Applied to the entire cart subtotal</td>
+</tr>
+<tr>
+<td><code>TAXABLE</code></td>
+<td>Applied only to items marked as taxable</td>
+</tr>
+</tbody>
+</table>
+<h2>Adding Cart Conditions</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Types\PercentageCondition</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Types\FixedCondition</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Enums\ConditionTarget</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add a 10% discount to the cart</span></span>
+<span class="line"><span style="color:#E1E4E8">$discount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;10% Off Sale&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// Negative for discount</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">SUBTOTAL</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addCondition</span><span style="color:#E1E4E8">($discount);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add a $5 shipping fee</span></span>
+<span class="line"><span style="color:#E1E4E8">$shipping </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">FixedCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Shipping Fee&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">5.00</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">SUBTOTAL</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addCondition</span><span style="color:#E1E4E8">($shipping);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add 8% tax on taxable items only</span></span>
+<span class="line"><span style="color:#E1E4E8">$tax </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Sales Tax&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">8</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">TAXABLE</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addCondition</span><span style="color:#E1E4E8">($tax);</span></span>
+<span class="line"></span></code></pre>
+<h2>Adding Item Conditions</h2>
+<p>Apply conditions directly to specific items:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Add 20% discount to a specific item</span></span>
+<span class="line"><span style="color:#E1E4E8">$itemDiscount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Item Discount&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">20</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">ITEM</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItemCondition</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, $itemDiscount);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add a $5 premium add-on fee</span></span>
+<span class="line"><span style="color:#E1E4E8">$addon </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">FixedCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Premium Add-on&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">5.00</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">ITEM</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItemCondition</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, $addon);</span></span>
+<span class="line"></span></code></pre>
+<h2>Removing Conditions</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Remove a specific condition from the cart</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">removeCondition</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;10% Off Sale&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Remove a condition from a specific item</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">removeItemCondition</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;Item Discount&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Clear all cart conditions</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">clearConditions</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span></code></pre>
+<h2>Marking Items as Non-Taxable</h2>
+<p>Some items like gift cards or services may be tax-exempt:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Add a non-taxable item</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">4</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Gift Card&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">50.00</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;taxable&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">false</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Update existing item to be non-taxable</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">updateItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, [</span><span style="color:#9ECBFF">&#39;taxable&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span></code></pre>
+<h2>Condition Order</h2>
+<p>When multiple conditions are applied, they are processed in order. You can control the order using the <code>order</code> parameter:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// This discount will be applied first</span></span>
+<span class="line"><span style="color:#E1E4E8">$firstDiscount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Early Bird&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">SUBTOTAL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">order</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// This discount will be applied second</span></span>
+<span class="line"><span style="color:#E1E4E8">$secondDiscount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Member Discount&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">SUBTOTAL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">order</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<h2>Getting Applied Conditions</h2>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Get all cart conditions</span></span>
+<span class="line"><span style="color:#E1E4E8">$conditions </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">conditions</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get conditions for a specific item</span></span>
+<span class="line"><span style="color:#E1E4E8">$item </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">item</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">$itemConditions </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">conditions;</span></span>
+<span class="line"></span></code></pre>
+<h2>Next Steps</h2>
+<ul>
+<li>Explore the <a href="/docs?section=rules-engine">Rules Engine</a> for advanced conditional logic</li>
+<li>Learn about <a href="/docs?section=configuration">Configuration</a> options for compound discounts</li>
+<li>See <a href="/docs?section=extending">Extending FlexiCart</a> to create custom condition types</li>
+</ul>

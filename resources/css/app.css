@@ -1,11 +1,42 @@
 @import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Shiki code blocks */
+pre.shiki {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.7;
+}
+
+.dark pre.shiki {
+    background-color: #0d1117 !important;
+}
+
+pre.shiki code {
+    background: transparent !important;
+    padding: 0;
+    font-size: inherit;
+}
+
+.prose pre.shiki {
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
 }

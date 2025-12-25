@@ -1,0 +1,282 @@
+<h1>Rules Engine</h1>
+<p>The Rules Engine extends FlexiCart's condition system to support complex promotional rules that have access to full cart context. Rules can make decisions based on items, quantities, and subtotals.</p>
+<h2>Overview</h2>
+<p>Rules differ from standard conditions in that they:</p>
+<ul>
+<li>Have access to the full cart context (items and subtotal)</li>
+<li>Can apply conditional logic based on cart state</li>
+<li>Support pattern matching for item IDs (wildcards)</li>
+<li>Are automatically applied during <code>Cart::total()</code> calculation</li>
+</ul>
+<h2>Available Rule Types</h2>
+<h3>BuyXGetYRule</h3>
+<p>Buy X items, get Y items free or at a discount. The discount is applied to the cheapest qualifying items.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Rules\BuyXGetYRule</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Buy 2 shirts, get 1 free</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addRule</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">BuyXGetYRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Buy 2 Get 1 Free&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">buyQuantity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">getQuantity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">getDiscount</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">100.0</span><span style="color:#E1E4E8"> </span><span style="color:#6A737D">// 100% off = free</span></span>
+<span class="line"><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Buy 3, get 1 at 50% off</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addRule</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">BuyXGetYRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Buy 3 Get 1 Half Off&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">buyQuantity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">getQuantity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">getDiscount</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">50.0</span></span>
+<span class="line"><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Apply only to specific items (supports wildcards)</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addRule</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">BuyXGetYRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Buy 2 Get 1 Free Shirts&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">buyQuantity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">getQuantity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">getDiscount</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">100.0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">itemIds</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">&#39;shirt-*&#39;</span><span style="color:#E1E4E8">] </span><span style="color:#6A737D">// Matches shirt-blue, shirt-red, etc.</span></span>
+<span class="line"><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span></code></pre>
+<p><strong>How it works:</strong></p>
+<ul>
+<li>Counts qualifying items in the cart</li>
+<li>Calculates how many complete &quot;bundles&quot; are available (buyQuantity + getQuantity)</li>
+<li>Applies discount to the cheapest items first</li>
+<li>Multiple bundles stack automatically</li>
+</ul>
+<h3>ThresholdRule</h3>
+<p>Apply a discount when the cart subtotal exceeds a minimum amount.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Rules\ThresholdRule</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Enums\ConditionType</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Spend $100, get 10% off</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addRule</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">ThresholdRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Spend $100 Save 10%&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">minSubtotal</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">100.00</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discount</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">10.0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discountType</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionType</span><span style="color:#F97583">::</span><span style="color:#79B8FF">PERCENTAGE</span></span>
+<span class="line"><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Spend $200, get $25 off</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addRule</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">ThresholdRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Spend $200 Save $25&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">minSubtotal</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">200.00</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discount</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">25.0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discountType</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionType</span><span style="color:#F97583">::</span><span style="color:#79B8FF">FIXED</span></span>
+<span class="line"><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span></code></pre>
+<h3>TieredRule</h3>
+<p>Progressive discounts based on subtotal thresholds. Only the highest applicable tier is applied (not cumulative).</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Rules\TieredRule</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Volume discount - higher spend = higher discount</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addRule</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">TieredRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Volume Discount&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">tiers</span><span style="color:#E1E4E8">: [</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">,   </span><span style="color:#6A737D">// 5% off at $100+</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#79B8FF">200</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// 10% off at $200+</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#79B8FF">500</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">15</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// 15% off at $500+</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]</span></span>
+<span class="line"><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span></code></pre>
+<p><strong>Getting tier information for display:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Display all available tiers to the user</span></span>
+<span class="line"><span style="color:#E1E4E8">$rule </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">TieredRule</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Volume Discount&#39;</span><span style="color:#E1E4E8">, [</span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">200</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">500</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">15</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"><span style="color:#E1E4E8">$tiers </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $rule</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getTiers</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">foreach</span><span style="color:#E1E4E8"> ($tiers </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> $tier) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">echo</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&quot;Spend </span><span style="color:#79B8FF">\$</span><span style="color:#9ECBFF">{</span><span style="color:#E1E4E8">$tier</span><span style="color:#9ECBFF">[&#39;threshold&#39;]}+ and save {</span><span style="color:#E1E4E8">$tier</span><span style="color:#9ECBFF">[&#39;discount&#39;]}%&quot;</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span></code></pre>
+<h3>ItemQuantityRule</h3>
+<p>Apply a discount when the quantity of specific items meets a minimum.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Rules\ItemQuantityRule</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Enums\ConditionType</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Buy 5+ widgets, get 10% off all widgets</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addRule</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">ItemQuantityRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Bulk Widget Discount&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">minQuantity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discount</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">10.0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discountType</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionType</span><span style="color:#F97583">::</span><span style="color:#79B8FF">PERCENTAGE</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">itemIds</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">&#39;widget&#39;</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Buy 10+ of any item, get $15 off</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addRule</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">ItemQuantityRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Bulk Order Discount&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">minQuantity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discount</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">15.0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discountType</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionType</span><span style="color:#F97583">::</span><span style="color:#79B8FF">FIXED</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">itemIds</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;*&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#6A737D">// Applies to all items</span></span>
+<span class="line"><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Buy 5+ items, get $2 off each item</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addRule</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">ItemQuantityRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Per Item Discount&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">minQuantity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discount</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">2.0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discountType</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionType</span><span style="color:#F97583">::</span><span style="color:#79B8FF">FIXED</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">itemIds</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;*&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">perItem</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8"> </span><span style="color:#6A737D">// Discount applies per qualifying item</span></span>
+<span class="line"><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span></code></pre>
+<h2>Pattern Matching for Item IDs</h2>
+<p>Rules that accept <code>itemIds</code> support wildcard pattern matching:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Match all items</span></span>
+<span class="line"><span style="color:#E1E4E8">$itemIds </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;*&#39;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Match a specific item</span></span>
+<span class="line"><span style="color:#E1E4E8">$itemIds </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;widget-123&#39;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Match items starting with &#39;shirt-&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">$itemIds </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;shirt-*&#39;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Match items ending with &#39;-sale&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">$itemIds </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;*-sale&#39;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Match multiple patterns</span></span>
+<span class="line"><span style="color:#E1E4E8">$itemIds </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [</span><span style="color:#9ECBFF">&#39;shirt-*&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;pants-*&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;hat-special&#39;</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"></span></code></pre>
+<h2>Managing Rules</h2>
+<h3>Adding Rules</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addRule</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">ThresholdRule</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Holiday Sale&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">50.0</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">-</span><span style="color:#79B8FF">15.0</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span></code></pre>
+<p>If you add a rule with the same name as an existing rule, it will be replaced.</p>
+<h3>Getting All Rules</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$rules </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">rules</span><span style="color:#E1E4E8">(); </span><span style="color:#6A737D">// Returns Collection&lt;string, RuleInterface&gt;</span></span>
+<span class="line"></span></code></pre>
+<h3>Removing Rules</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Remove a specific rule by name</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">removeRule</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Holiday Sale&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Clear all rules</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">clearRules</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span></code></pre>
+<h3>Rule Persistence</h3>
+<p>Rules are automatically persisted with the cart. When you reload a cart, all rules are restored.</p>
+<h2>Combining Rules and Conditions</h2>
+<p>Rules work alongside standard conditions. Both are applied during <code>Cart::total()</code> calculation:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Standard condition - fixed coupon discount</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addCondition</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">FixedCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;SAVE10&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">10.00</span></span>
+<span class="line"><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Rule - threshold discount</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addRule</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">ThresholdRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Spend More Save More&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">minSubtotal</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">100.00</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discount</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">10.0</span></span>
+<span class="line"><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Both discounts apply if conditions are met</span></span>
+<span class="line"><span style="color:#E1E4E8">$total </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">total</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span></code></pre>
+<h2>Rule Events</h2>
+<p>Events are dispatched when rules are modified:</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RuleAdded</code></td>
+<td>When a rule is added or replaced</td>
+</tr>
+<tr>
+<td><code>RuleRemoved</code></td>
+<td>When a rule is removed</td>
+</tr>
+<tr>
+<td><code>RulesCleared</code></td>
+<td>When all rules are cleared</td>
+</tr>
+</tbody>
+</table>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\RuleAdded</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">RuleAdded</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">RuleAdded</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Rule &#39;{</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">rule</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getName</span><span style="color:#9ECBFF">()}&#39; added to cart {</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">cartId</span><span style="color:#9ECBFF">}&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">if</span><span style="color:#E1E4E8"> ($event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">replaced) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;This rule replaced an existing rule with the same name&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h2>Creating Custom Rules</h2>
+<p>To create a custom rule, extend <code>AbstractRule</code> and implement the required methods:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Rules\AbstractRule</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Price</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">FirstTimeCustomerRule</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">extends</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">AbstractRule</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">__construct</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">string</span><span style="color:#E1E4E8"> $name,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">readonly</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">float</span><span style="color:#E1E4E8"> $discountPercent,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">array</span><span style="color:#E1E4E8">|</span><span style="color:#79B8FF">Fluent</span><span style="color:#E1E4E8"> $attributes </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> [],</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">int</span><span style="color:#E1E4E8"> $order </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">bool</span><span style="color:#E1E4E8"> $taxable </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">false</span></span>
+<span class="line"><span style="color:#E1E4E8">    ) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">parent::</span><span style="color:#B392F0">__construct</span><span style="color:#E1E4E8">($name, $discountPercent, $attributes, $order, $taxable);</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">type </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">ConditionType</span><span style="color:#F97583">::</span><span style="color:#79B8FF">PERCENTAGE</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">applies</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">bool</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#6A737D">// Check if this is a first-time customer via attributes</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">attributes</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;is_first_order&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">===</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">getDiscount</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">:</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span></span>
+<span class="line"><span style="color:#E1E4E8">    {</span></span>
+<span class="line"><span style="color:#E1E4E8">        $discountAmount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">subtotal</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">multiplyBy</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">discountPercent </span><span style="color:#F97583">/</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">-</span><span style="color:#E1E4E8">$discountAmount</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">toFloat</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Usage</span></span>
+<span class="line"><span style="color:#E1E4E8">$cart</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">addRule</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">FirstTimeCustomerRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;First Order Discount&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discountPercent</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">20.0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">attributes</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">&#39;is_first_order&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $user</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">orders</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">count</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">===</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span></code></pre>
+<h3>Available Helper Methods in AbstractRule</h3>
+<p>When creating custom rules, you have access to these protected helper methods:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Get total quantity of all items in cart</span></span>
+<span class="line"><span style="color:#E1E4E8">$totalQty </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getTotalQuantity</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get quantity of items matching specific IDs (supports wildcards)</span></span>
+<span class="line"><span style="color:#E1E4E8">$shirtQty </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getItemQuantity</span><span style="color:#E1E4E8">([</span><span style="color:#9ECBFF">&#39;shirt-*&#39;</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get collection of items matching specific IDs</span></span>
+<span class="line"><span style="color:#E1E4E8">$shirts </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getMatchingItems</span><span style="color:#E1E4E8">([</span><span style="color:#9ECBFF">&#39;shirt-*&#39;</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check if a value matches a pattern</span></span>
+<span class="line"><span style="color:#E1E4E8">$matches </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">matchesPattern</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;shirt-blue&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;shirt-*&#39;</span><span style="color:#E1E4E8">); </span><span style="color:#6A737D">// true</span></span>
+<span class="line"></span></code></pre>
+<h3>Available Context in Rules</h3>
+<p>Rules have access to:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Collection of all cart items</span></span>
+<span class="line"><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">items; </span><span style="color:#6A737D">// Collection&lt;string, CartItem&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Cart subtotal</span></span>
+<span class="line"><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">subtotal; </span><span style="color:#6A737D">// Price</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check if context has been set</span></span>
+<span class="line"><span style="color:#79B8FF">$this</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">contextSet; </span><span style="color:#6A737D">// bool</span></span>
+<span class="line"></span></code></pre>
+<h2>Best Practices</h2>
+<ol>
+<li><strong>Use descriptive rule names</strong> - They're used as unique identifiers</li>
+<li><strong>Order rules appropriately</strong> - Use the <code>order</code> parameter if rule execution order matters</li>
+<li><strong>Consider combining with conditions</strong> - Use rules for cart-context-aware logic, conditions for simple discounts</li>
+<li><strong>Test edge cases</strong> - Empty carts, exactly-at-threshold amounts, multiple bundles</li>
+<li><strong>Use pattern matching wisely</strong> - Wildcards are powerful but can be too broad</li>
+</ol>
