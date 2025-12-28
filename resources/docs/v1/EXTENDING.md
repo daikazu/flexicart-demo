@@ -336,7 +336,9 @@ if (Cart::hasPromoCode()) {
 }
 ```
 
-## Testing Custom Extensions
+## Testing FlexiCart
+
+### Testing Custom Extensions
 
 ```php
 use Daikazu\Flexicart\Facades\Cart;
@@ -358,5 +360,162 @@ test('bogo condition applies correctly', function () {
 
     // With BOGO 50% off on 2 items ($40 total), discount should be $10
     expect($item->total()->toFloat())->toBe(30.00);
+});
+```
+
+### Resetting the Cart Between Tests
+
+Always reset the cart between tests to ensure a clean state:
+
+```php
+use Daikazu\Flexicart\Facades\Cart;
+
+beforeEach(function () {
+    Cart::reset();
+});
+
+test('cart starts empty', function () {
+    expect(Cart::isEmpty())->toBeTrue();
+    expect(Cart::count())->toBe(0);
+});
+```
+
+### Testing Cart Operations
+
+```php
+use Daikazu\Flexicart\Facades\Cart;
+
+test('can add items to cart', function () {
+    Cart::addItem([
+        'id' => 'product-1',
+        'name' => 'Test Product',
+        'price' => 25.00,
+        'quantity' => 2,
+    ]);
+
+    expect(Cart::count())->toBe(2);
+    expect(Cart::uniqueCount())->toBe(1);
+    expect(Cart::subtotal()->toFloat())->toBe(50.00);
+});
+
+test('can update item quantity', function () {
+    Cart::addItem([
+        'id' => 'product-1',
+        'name' => 'Test Product',
+        'price' => 25.00,
+        'quantity' => 1,
+    ]);
+
+    Cart::updateItem('product-1', ['quantity' => 5]);
+
+    expect(Cart::count())->toBe(5);
+});
+
+test('can apply discount condition', function () {
+    Cart::addItem([
+        'id' => 'product-1',
+        'name' => 'Test Product',
+        'price' => 100.00,
+        'quantity' => 1,
+    ]);
+
+    Cart::addCondition(new PercentageCondition(
+        name: '10% Off',
+        value: -10,
+        target: ConditionTarget::SUBTOTAL
+    ));
+
+    expect(Cart::total()->toFloat())->toBe(90.00);
+});
+```
+
+### Testing with Events
+
+```php
+use Daikazu\Flexicart\Facades\Cart;
+use Daikazu\Flexicart\Events\ItemAdded;
+use Illuminate\Support\Facades\Event;
+
+test('dispatches event when item is added', function () {
+    Event::fake([ItemAdded::class]);
+
+    Cart::addItem([
+        'id' => 'product-1',
+        'name' => 'Test Product',
+        'price' => 25.00,
+    ]);
+
+    Event::assertDispatched(ItemAdded::class, function ($event) {
+        return $event->item->id === 'product-1';
+    });
+});
+```
+
+### Testing Rules
+
+```php
+use Daikazu\Flexicart\Facades\Cart;
+use Daikazu\Flexicart\Conditions\Rules\ThresholdRule;
+use Daikazu\Flexicart\Enums\ConditionType;
+
+test('threshold rule applies when subtotal met', function () {
+    Cart::addItem([
+        'id' => 'product-1',
+        'name' => 'Expensive Item',
+        'price' => 150.00,
+        'quantity' => 1,
+    ]);
+
+    Cart::addRule(new ThresholdRule(
+        name: 'Spend $100 Save 10%',
+        minSubtotal: 100.00,
+        discount: -10.0,
+        discountType: ConditionType::PERCENTAGE
+    ));
+
+    // $150 - 10% = $135
+    expect(Cart::total()->toFloat())->toBe(135.00);
+});
+
+test('threshold rule does not apply when subtotal not met', function () {
+    Cart::addItem([
+        'id' => 'product-1',
+        'name' => 'Cheap Item',
+        'price' => 50.00,
+        'quantity' => 1,
+    ]);
+
+    Cart::addRule(new ThresholdRule(
+        name: 'Spend $100 Save 10%',
+        minSubtotal: 100.00,
+        discount: -10.0,
+        discountType: ConditionType::PERCENTAGE
+    ));
+
+    // Rule doesn't apply, still $50
+    expect(Cart::total()->toFloat())->toBe(50.00);
+});
+```
+
+### Mocking the Cart Facade
+
+For unit testing code that uses the Cart:
+
+```php
+use Daikazu\Flexicart\Facades\Cart;
+use Daikazu\Flexicart\Price;
+
+test('checkout calculates correct total', function () {
+    Cart::shouldReceive('total')
+        ->once()
+        ->andReturn(Price::from(99.99));
+
+    Cart::shouldReceive('items')
+        ->once()
+        ->andReturn(collect());
+
+    // Test your checkout logic here
+    $checkout = new CheckoutService();
+    expect($checkout->getTotal())->toBe(99.99);
 });
 ```

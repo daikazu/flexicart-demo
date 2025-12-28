@@ -1,0 +1,301 @@
+<h1>Troubleshooting</h1>
+<p>This guide covers common issues you may encounter when using FlexiCart and how to resolve them.</p>
+<h2>Common Issues</h2>
+<h3>Cart Data Not Persisting Between Requests</h3>
+<p><strong>Symptoms:</strong> Items disappear after page refresh or navigation.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>
+<p><strong>Check session configuration:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Ensure sessions are properly configured in config/session.php</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;driver&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">env</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;SESSION_DRIVER&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;file&#39;</span><span style="color:#E1E4E8">),</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>Verify middleware is applied:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Ensure web middleware group is applied to your routes</span></span>
+<span class="line"><span style="color:#79B8FF">Route</span><span style="color:#F97583">::</span><span style="color:#B392F0">middleware</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;web&#39;</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">group</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> () {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Your cart routes</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>If using database storage:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D"># Verify migrations have been run</span></span>
+<span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">migrate:status</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Run migrations if needed</span></span>
+<span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">vendor:publish</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">--tag=</span><span style="color:#9ECBFF">&quot;flexicart-migrations&quot;</span></span>
+<span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">migrate</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>Check environment variable:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D"># Ensure storage driver is set correctly</span></span>
+<span class="line"><span style="color:#FFAB70">CART_STORAGE</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">session  </span><span style="color:#6A737D"># or &#39;database&#39;</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<h3>Price Calculation Errors</h3>
+<p><strong>Symptoms:</strong> Unexpected totals, errors when adding items.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>
+<p><strong>Verify price values are numeric:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Correct</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">29.99</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// numeric value</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Incorrect</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;$29.99&#39;</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// string with currency symbol</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>Ensure currency codes are valid:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// config/flexicart.php</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;currency&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;USD&#39;</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// Must be valid ISO 4217 code</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>Check for currency mismatches:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// All prices should use the same currency</span></span>
+<span class="line"><span style="color:#E1E4E8">$price1 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">10.00</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;USD&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">$price2 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">5.00</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;USD&#39;</span><span style="color:#E1E4E8">);  </span><span style="color:#6A737D">// Same currency</span></span>
+<span class="line"><span style="color:#E1E4E8">$total </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $price1</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">plus</span><span style="color:#E1E4E8">($price2);  </span><span style="color:#6A737D">// Works</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$price3 </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">5.00</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;EUR&#39;</span><span style="color:#E1E4E8">);  </span><span style="color:#6A737D">// Different currency</span></span>
+<span class="line"><span style="color:#6A737D">// $price1-&gt;plus($price3);  // Throws exception</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<h3>Condition Not Applying Correctly</h3>
+<p><strong>Symptoms:</strong> Discounts or fees not showing in total.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>
+<p><strong>Verify condition target:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Enums\ConditionTarget</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// For cart-wide discounts</span></span>
+<span class="line"><span style="color:#E1E4E8">$condition </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Discount&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">SUBTOTAL</span><span style="color:#E1E4E8">  </span><span style="color:#6A737D">// Not ITEM</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>Check condition order:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Lower order numbers are applied first</span></span>
+<span class="line"><span style="color:#E1E4E8">$firstDiscount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;First&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">5</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">order</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">  </span><span style="color:#6A737D">// Applied first</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$secondDiscount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Second&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">order</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">  </span><span style="color:#6A737D">// Applied second</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>Ensure values are properly signed:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Negative for discounts</span></span>
+<span class="line"><span style="color:#E1E4E8">$discount </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Discount&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">  </span><span style="color:#6A737D">// Negative = discount</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Positive for fees</span></span>
+<span class="line"><span style="color:#E1E4E8">$fee </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">FixedCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Shipping&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">5.99</span><span style="color:#E1E4E8">  </span><span style="color:#6A737D">// Positive = fee</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>Verify taxable targeting:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// If targeting taxable items, ensure items are marked as taxable</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Product&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;taxable&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// Required for TAXABLE target</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<h3>Memory Issues with Large Carts</h3>
+<p><strong>Symptoms:</strong> Slow performance, memory exhaustion errors.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>
+<p><strong>Use database storage:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#FFAB70">CART_STORAGE</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">database</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>Implement cart item limits:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// In your controller</span></span>
+<span class="line"><span style="color:#F97583">public</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">addToCart</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">Request</span><span style="color:#E1E4E8"> $request)</span></span>
+<span class="line"><span style="color:#E1E4E8">{</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">uniqueCount</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">&gt;=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">back</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">with</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;error&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;Cart is full&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">($request</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">validated</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>Configure cart cleanup:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// config/flexicart.php</span></span>
+<span class="line"><span style="color:#9ECBFF">&#39;cleanup&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;enabled&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;lifetime&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">60</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">24</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">7</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// 1 week</span></span>
+<span class="line"><span style="color:#E1E4E8">],</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>Schedule regular cleanup:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// routes/console.php</span></span>
+<span class="line"><span style="color:#79B8FF">Schedule</span><span style="color:#F97583">::</span><span style="color:#B392F0">command</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;flexicart:cleanup-carts&#39;</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">daily</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<h3>Rules Not Applying</h3>
+<p><strong>Symptoms:</strong> Promotional rules don't affect the total.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>
+<p><strong>Ensure rule conditions are met:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// ThresholdRule requires minimum subtotal</span></span>
+<span class="line"><span style="color:#E1E4E8">$rule </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">ThresholdRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Spend $100 Save 10%&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">minSubtotal</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">100.00</span><span style="color:#E1E4E8">,  </span><span style="color:#6A737D">// Cart must have $100+ subtotal</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discount</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">10.0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">discountType</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionType</span><span style="color:#F97583">::</span><span style="color:#79B8FF">PERCENTAGE</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check if cart meets threshold</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">subtotal</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">toFloat</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">&lt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">100</span><span style="color:#E1E4E8">) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Rule won&#39;t apply</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span></code></pre>
+</li>
+<li>
+<p><strong>Verify item ID patterns match:</strong></p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Pattern must match item IDs</span></span>
+<span class="line"><span style="color:#E1E4E8">$rule </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">BuyXGetYRule</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Buy 2 Get 1 Free&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">buyQuantity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">getQuantity</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">getDiscount</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">100.0</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">itemIds</span><span style="color:#E1E4E8">: [</span><span style="color:#9ECBFF">&#39;shirt-*&#39;</span><span style="color:#E1E4E8">]  </span><span style="color:#6A737D">// Must match item IDs like &#39;shirt-blue&#39;</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// These would match:</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;shirt-blue&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">...</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;shirt-red&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">...</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// This would NOT match:</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;pants-blue&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">...</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span></code></pre>
+</li>
+</ol>
+<h2>Exception Handling</h2>
+<p>FlexiCart throws specific exceptions that you can catch and handle:</p>
+<h3>CartException</h3>
+<p>Thrown for cart-specific errors like invalid operations or missing data.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Exceptions\CartException</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">try</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Product&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">10.00</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#6A737D">// Missing required &#39;id&#39; field</span></span>
+<span class="line"><span style="color:#E1E4E8">    ]);</span></span>
+<span class="line"><span style="color:#E1E4E8">} </span><span style="color:#F97583">catch</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">CartException</span><span style="color:#E1E4E8"> $e) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">error</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Cart error: &#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">.</span><span style="color:#E1E4E8"> $e</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getMessage</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">back</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">with</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;error&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;Unable to add item to cart&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span></code></pre>
+<h3>PriceException</h3>
+<p>Thrown for price calculation errors.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Exceptions\PriceException</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">try</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#E1E4E8">    $price </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Price</span><span style="color:#F97583">::</span><span style="color:#B392F0">from</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;invalid&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">} </span><span style="color:#F97583">catch</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">PriceException</span><span style="color:#E1E4E8"> $e) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">error</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Price error: &#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">.</span><span style="color:#E1E4E8"> $e</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getMessage</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">back</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">with</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;error&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">&#39;Invalid price format&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span></code></pre>
+<h3>Global Exception Handling</h3>
+<p>Add to your exception handler for application-wide handling:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// app/Exceptions/Handler.php or bootstrap/app.php (Laravel 11+)</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Exceptions\CartException</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Exceptions\PriceException</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">withExceptions</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">Exceptions</span><span style="color:#E1E4E8"> $exceptions) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    $exceptions</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">render</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">CartException</span><span style="color:#E1E4E8"> $e) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">response</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">json</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;error&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Cart operation failed&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;message&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $e</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getMessage</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">        ], </span><span style="color:#79B8FF">400</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    });</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    $exceptions</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">render</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">PriceException</span><span style="color:#E1E4E8"> $e) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#F97583">return</span><span style="color:#E1E4E8"> </span><span style="color:#B392F0">response</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">json</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;error&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Price calculation error&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">            </span><span style="color:#9ECBFF">&#39;message&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> $e</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getMessage</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">        ], </span><span style="color:#79B8FF">400</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">    });</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h2>Debugging Tips</h2>
+<h3>Inspect Cart State</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Get all cart data for debugging</span></span>
+<span class="line"><span style="color:#E1E4E8">$data </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">getRawCartData</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"><span style="color:#B392F0">dd</span><span style="color:#E1E4E8">($data);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check specific values</span></span>
+<span class="line"><span style="color:#B392F0">dump</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Items:&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">items</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#B392F0">dump</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Conditions:&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">conditions</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#B392F0">dump</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Rules:&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">rules</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#B392F0">dump</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Subtotal:&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">subtotal</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">formatted</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#B392F0">dump</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Total:&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">total</span><span style="color:#E1E4E8">()</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">formatted</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"></span></code></pre>
+<h3>Enable Event Debugging</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// In a service provider or test</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemAdded</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Illuminate\Support\Facades\Event</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;*&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> ($eventName, </span><span style="color:#F97583">array</span><span style="color:#E1E4E8"> $data) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">if</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">str_starts_with</span><span style="color:#E1E4E8">($eventName, </span><span style="color:#9ECBFF">&#39;Daikazu</span><span style="color:#79B8FF">\\</span><span style="color:#9ECBFF">Flexicart</span><span style="color:#79B8FF">\\</span><span style="color:#9ECBFF">Events&#39;</span><span style="color:#E1E4E8">)) {</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">debug</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Cart Event: {</span><span style="color:#E1E4E8">$eventName</span><span style="color:#9ECBFF">}&quot;</span><span style="color:#E1E4E8">, $data);</span></span>
+<span class="line"><span style="color:#E1E4E8">    }</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h3>Check Configuration</h3>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// Verify configuration is loaded correctly</span></span>
+<span class="line"><span style="color:#B392F0">dump</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">config</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;flexicart&#39;</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Check specific settings</span></span>
+<span class="line"><span style="color:#B392F0">dump</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Storage:&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">config</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;flexicart.storage&#39;</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#B392F0">dump</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Currency:&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">config</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;flexicart.currency&#39;</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#B392F0">dump</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;Compound Discounts:&#39;</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">config</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;flexicart.compound_discounts&#39;</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"></span></code></pre>
+<h2>Getting Help</h2>
+<p>If you're still experiencing issues:</p>
+<ol>
+<li>Check the <a href="https://github.com/daikazu/flexicart/issues">GitHub Issues</a> for similar problems</li>
+<li>Review the test suite for usage examples</li>
+<li>Enable Laravel's debug mode to see detailed error messages</li>
+<li>Use <code>dd()</code> or <code>dump()</code> to inspect cart state at various points</li>
+</ol>

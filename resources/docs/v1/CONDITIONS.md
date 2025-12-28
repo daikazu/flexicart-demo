@@ -8,7 +8,8 @@ FlexiCart supports several types of conditions:
 
 - **Percentage Conditions**: Apply percentage-based adjustments (e.g., 10% discount)
 - **Fixed Conditions**: Apply fixed-amount adjustments (e.g., $5 off, $2.99 shipping)
-- **Tax Conditions**: Special conditions for tax calculations on taxable items
+- **Percentage Tax Conditions**: Percentage-based tax calculations on taxable items
+- **Fixed Tax Conditions**: Fixed-amount tax applied to taxable items
 
 ### Condition Targets
 
@@ -105,6 +106,49 @@ Cart::addItem([
 Cart::updateItem('item_id', ['taxable' => false]);
 ```
 
+## Tax Conditions
+
+FlexiCart provides dedicated tax condition classes that automatically target taxable items:
+
+### PercentageTaxCondition
+
+Apply percentage-based tax to taxable items only:
+
+```php
+use Daikazu\Flexicart\Conditions\Types\PercentageTaxCondition;
+
+// Add 8.25% sales tax
+$salesTax = new PercentageTaxCondition(
+    name: 'Sales Tax',
+    value: 8.25
+);
+Cart::addCondition($salesTax);
+
+// Add 5% state tax
+$stateTax = new PercentageTaxCondition(
+    name: 'State Tax',
+    value: 5.0
+);
+Cart::addCondition($stateTax);
+```
+
+### FixedTaxCondition
+
+Apply a fixed tax amount:
+
+```php
+use Daikazu\Flexicart\Conditions\Types\FixedTaxCondition;
+
+// Add a flat $2.50 environmental fee
+$envFee = new FixedTaxCondition(
+    name: 'Environmental Fee',
+    value: 2.50
+);
+Cart::addCondition($envFee);
+```
+
+> **Note:** Tax conditions automatically target `ConditionTarget::TAXABLE`, so you don't need to specify the target.
+
 ## Condition Order
 
 When multiple conditions are applied, they are processed in order. You can control the order using the `order` parameter:
@@ -136,6 +180,85 @@ $conditions = Cart::conditions();
 // Get conditions for a specific item
 $item = Cart::item('item_id');
 $itemConditions = $item->conditions;
+```
+
+## Condition Properties
+
+When creating conditions, you can specify additional properties:
+
+```php
+use Daikazu\Flexicart\Conditions\Types\PercentageCondition;
+use Daikazu\Flexicart\Enums\ConditionTarget;
+
+$condition = new PercentageCondition(
+    name: 'VIP Discount',         // Required: unique identifier
+    value: -15,                    // Required: adjustment value
+    target: ConditionTarget::SUBTOTAL, // Where to apply
+    attributes: [                  // Optional: custom metadata
+        'code' => 'VIP2024',
+        'expires_at' => '2024-12-31',
+    ],
+    order: 1,                      // Optional: processing order (default: 0)
+    taxable: true                  // Optional: affects taxable subtotal (default: false)
+);
+```
+
+### Property Reference
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `name` | string | required | Unique identifier for the condition |
+| `value` | int\|float | required | The adjustment value (negative for discounts) |
+| `target` | ConditionTarget | SUBTOTAL | Where to apply: ITEM, SUBTOTAL, or TAXABLE |
+| `attributes` | array | [] | Custom metadata stored with the condition |
+| `order` | int | 0 | Processing order (lower numbers first) |
+| `taxable` | bool | false | When true, the condition affects taxable calculations |
+
+### Creating Conditions from Arrays
+
+You can create conditions from arrays using the factory method:
+
+```php
+use Daikazu\Flexicart\Conditions\Types\FixedCondition;
+use Daikazu\Flexicart\Enums\ConditionTarget;
+
+$condition = FixedCondition::make([
+    'name' => 'Shipping',
+    'value' => 5.99,
+    'target' => ConditionTarget::SUBTOTAL,
+    'attributes' => ['carrier' => 'USPS'],
+]);
+```
+
+## Adding Multiple Conditions
+
+Add multiple conditions at once:
+
+```php
+Cart::addConditions([
+    new PercentageCondition(
+        name: 'Member Discount',
+        value: -10,
+        target: ConditionTarget::SUBTOTAL
+    ),
+    new FixedCondition(
+        name: 'Shipping',
+        value: 5.99,
+        target: ConditionTarget::SUBTOTAL
+    ),
+]);
+```
+
+## Clearing Item Conditions
+
+Remove all conditions from a specific item:
+
+```php
+$item = Cart::item('item_id');
+$item->clearConditions();
+
+// Don't forget to persist the change
+Cart::updateItem('item_id', []);
 ```
 
 ## Next Steps

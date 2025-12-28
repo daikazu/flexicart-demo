@@ -96,6 +96,37 @@
 <span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;lifetime&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">60</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">24</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">*</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">7</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// 1 week in minutes</span></span>
 <span class="line"><span style="color:#E1E4E8">],</span></span>
 <span class="line"></span></code></pre>
+<h3>Running the Cleanup Command</h3>
+<p>FlexiCart provides an Artisan command to clean up old carts:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D"># Clean up carts older than the configured lifetime</span></span>
+<span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">flexicart:cleanup-carts</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Force delete ALL carts (use with caution!)</span></span>
+<span class="line"><span style="color:#B392F0">php</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">artisan</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">flexicart:cleanup-carts</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">--force</span></span>
+<span class="line"></span></code></pre>
+<h3>Scheduling Automatic Cleanup</h3>
+<p>Add the cleanup command to your Laravel scheduler in <code>routes/console.php</code>:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Illuminate\Support\Facades\Schedule</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Run cleanup daily at midnight</span></span>
+<span class="line"><span style="color:#79B8FF">Schedule</span><span style="color:#F97583">::</span><span style="color:#B392F0">command</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;flexicart:cleanup-carts&#39;</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">daily</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Or run weekly on Sundays</span></span>
+<span class="line"><span style="color:#79B8FF">Schedule</span><span style="color:#F97583">::</span><span style="color:#B392F0">command</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;flexicart:cleanup-carts&#39;</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">weekly</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span></code></pre>
+<h2>Raw Cart Data</h2>
+<p>For debugging or custom integrations, you can access raw cart data:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$data </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">getRawCartData</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Returns:</span></span>
+<span class="line"><span style="color:#6A737D">// [</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;items&#39; =&gt; Collection of CartItem objects,</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;subtotal&#39; =&gt; Price object,</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;total&#39; =&gt; Price object,</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;count&#39; =&gt; int,</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;conditions&#39; =&gt; Collection of conditions,</span></span>
+<span class="line"><span style="color:#6A737D">// ]</span></span>
+<span class="line"></span></code></pre>
 <h2>Events</h2>
 <p>Enable or disable cart lifecycle events:</p>
 <pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#9ECBFF">&#39;events&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span></span>

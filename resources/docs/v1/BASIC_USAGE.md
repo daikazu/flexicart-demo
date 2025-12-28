@@ -98,6 +98,9 @@ $uniqueItems = Cart::uniqueCount(); // Number of unique items
 // Check if cart is empty
 $isEmpty = Cart::isEmpty();
 
+// Get the cart ID
+$cartId = Cart::id();
+
 // Get cart totals (returns Price objects)
 $subtotal = Cart::subtotal();              // Subtotal before conditions
 $total = Cart::total();                     // Final total after all conditions
@@ -120,8 +123,63 @@ $item->taxable;     // Whether item is taxable
 $item->conditions;  // Collection of item conditions
 
 // Get calculated values
-$item->unitPrice();   // Price per unit
-$item->subtotal();    // Total for this item (price × quantity + conditions)
+$item->unitPrice();            // Price per unit
+$item->subtotal();             // Total for this item (price × quantity + conditions)
+$item->unadjustedSubtotal();   // Total before conditions (price × quantity)
+```
+
+### CartItem Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `unitPrice()` | Price | The base price per unit |
+| `subtotal()` | Price | Total after applying item conditions |
+| `unadjustedSubtotal()` | Price | Total before conditions (price × quantity) |
+| `setQuantity(int)` | self | Set the item quantity directly |
+| `addCondition($condition)` | self | Add a condition to the item |
+| `addConditions(array)` | self | Add multiple conditions at once |
+| `removeCondition(string)` | self | Remove a condition by name |
+| `clearConditions()` | self | Remove all conditions from the item |
+| `toArray()` | array | Convert the item to an array |
+
+### Creating CartItem Objects
+
+You can create CartItem objects directly using the factory method:
+
+```php
+use Daikazu\Flexicart\CartItem;
+
+$item = CartItem::make([
+    'id' => 'product-123',
+    'name' => 'Premium Widget',
+    'price' => 49.99,
+    'quantity' => 2,
+    'attributes' => ['color' => 'blue'],
+    'taxable' => true,
+]);
+
+Cart::addItem($item);
+```
+
+### Converting Items to Arrays
+
+Useful for APIs or serialization:
+
+```php
+$item = Cart::item('product-123');
+$data = $item->toArray();
+
+// Returns:
+// [
+//     'id' => 'product-123',
+//     'name' => 'Premium Widget',
+//     'price' => Price object,
+//     'quantity' => 2,
+//     'unitPrice' => Price object,
+//     'subtotal' => Price object,
+//     'attributes' => ['color' => 'blue'],
+//     'conditions' => [],
+// ]
 ```
 
 ## Next Steps

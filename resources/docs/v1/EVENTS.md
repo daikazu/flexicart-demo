@@ -207,6 +207,54 @@ Event::listen(ItemConditionRemoved::class, function (ItemConditionRemoved $event
 });
 ```
 
+### Rule Events
+
+#### `RuleAdded`
+Dispatched when a rule is added to the cart.
+
+```php
+use Daikazu\Flexicart\Events\RuleAdded;
+
+Event::listen(RuleAdded::class, function (RuleAdded $event) {
+    Log::info("Rule '{$event->rule->getName()}' added to cart");
+
+    // Available properties:
+    // $event->cartId
+    // $event->rule (RuleInterface instance)
+    // $event->replaced (bool - true if rule with same name was replaced)
+});
+```
+
+#### `RuleRemoved`
+Dispatched when a rule is removed from the cart.
+
+```php
+use Daikazu\Flexicart\Events\RuleRemoved;
+
+Event::listen(RuleRemoved::class, function (RuleRemoved $event) {
+    Log::info("Rule '{$event->rule->getName()}' removed from cart");
+
+    // Available properties:
+    // $event->cartId
+    // $event->rule (the removed RuleInterface instance)
+});
+```
+
+#### `RulesCleared`
+Dispatched when all rules are cleared from the cart.
+
+```php
+use Daikazu\Flexicart\Events\RulesCleared;
+
+Event::listen(RulesCleared::class, function (RulesCleared $event) {
+    Log::info("All rules cleared: {$event->rules->count()} total");
+
+    // Available properties:
+    // $event->cartId
+    // $event->rules (Collection of cleared RuleInterface instances)
+});
+```
+
 ## Use Cases
 
 ### Inventory Management

@@ -123,6 +123,9 @@
 <span class="line"><span style="color:#6A737D">// Check if cart is empty</span></span>
 <span class="line"><span style="color:#E1E4E8">$isEmpty </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">isEmpty</span><span style="color:#E1E4E8">();</span></span>
 <span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Get the cart ID</span></span>
+<span class="line"><span style="color:#E1E4E8">$cartId </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">id</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
 <span class="line"><span style="color:#6A737D">// Get cart totals (returns Price objects)</span></span>
 <span class="line"><span style="color:#E1E4E8">$subtotal </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">subtotal</span><span style="color:#E1E4E8">();              </span><span style="color:#6A737D">// Subtotal before conditions</span></span>
 <span class="line"><span style="color:#E1E4E8">$total </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">total</span><span style="color:#E1E4E8">();                     </span><span style="color:#6A737D">// Final total after all conditions</span></span>
@@ -141,8 +144,98 @@
 <span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">conditions;  </span><span style="color:#6A737D">// Collection of item conditions</span></span>
 <span class="line"></span>
 <span class="line"><span style="color:#6A737D">// Get calculated values</span></span>
-<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">unitPrice</span><span style="color:#E1E4E8">();   </span><span style="color:#6A737D">// Price per unit</span></span>
-<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">subtotal</span><span style="color:#E1E4E8">();    </span><span style="color:#6A737D">// Total for this item (price × quantity + conditions)</span></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">unitPrice</span><span style="color:#E1E4E8">();            </span><span style="color:#6A737D">// Price per unit</span></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">subtotal</span><span style="color:#E1E4E8">();             </span><span style="color:#6A737D">// Total for this item (price × quantity + conditions)</span></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">unadjustedSubtotal</span><span style="color:#E1E4E8">();   </span><span style="color:#6A737D">// Total before conditions (price × quantity)</span></span>
+<span class="line"></span></code></pre>
+<h3>CartItem Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unitPrice()</code></td>
+<td>Price</td>
+<td>The base price per unit</td>
+</tr>
+<tr>
+<td><code>subtotal()</code></td>
+<td>Price</td>
+<td>Total after applying item conditions</td>
+</tr>
+<tr>
+<td><code>unadjustedSubtotal()</code></td>
+<td>Price</td>
+<td>Total before conditions (price × quantity)</td>
+</tr>
+<tr>
+<td><code>setQuantity(int)</code></td>
+<td>self</td>
+<td>Set the item quantity directly</td>
+</tr>
+<tr>
+<td><code>addCondition($condition)</code></td>
+<td>self</td>
+<td>Add a condition to the item</td>
+</tr>
+<tr>
+<td><code>addConditions(array)</code></td>
+<td>self</td>
+<td>Add multiple conditions at once</td>
+</tr>
+<tr>
+<td><code>removeCondition(string)</code></td>
+<td>self</td>
+<td>Remove a condition by name</td>
+</tr>
+<tr>
+<td><code>clearConditions()</code></td>
+<td>self</td>
+<td>Remove all conditions from the item</td>
+</tr>
+<tr>
+<td><code>toArray()</code></td>
+<td>array</td>
+<td>Convert the item to an array</td>
+</tr>
+</tbody>
+</table>
+<h3>Creating CartItem Objects</h3>
+<p>You can create CartItem objects directly using the factory method:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\CartItem</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$item </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">CartItem</span><span style="color:#F97583">::</span><span style="color:#B392F0">make</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;id&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;product-123&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Premium Widget&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;price&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">49.99</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;quantity&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;attributes&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span><span style="color:#9ECBFF">&#39;color&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;blue&#39;</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;taxable&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addItem</span><span style="color:#E1E4E8">($item);</span></span>
+<span class="line"></span></code></pre>
+<h3>Converting Items to Arrays</h3>
+<p>Useful for APIs or serialization:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$item </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">item</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;product-123&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">$data </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">toArray</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Returns:</span></span>
+<span class="line"><span style="color:#6A737D">// [</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;id&#39; =&gt; &#39;product-123&#39;,</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;name&#39; =&gt; &#39;Premium Widget&#39;,</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;price&#39; =&gt; Price object,</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;quantity&#39; =&gt; 2,</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;unitPrice&#39; =&gt; Price object,</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;subtotal&#39; =&gt; Price object,</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;attributes&#39; =&gt; [&#39;color&#39; =&gt; &#39;blue&#39;],</span></span>
+<span class="line"><span style="color:#6A737D">//     &#39;conditions&#39; =&gt; [],</span></span>
+<span class="line"><span style="color:#6A737D">// ]</span></span>
 <span class="line"></span></code></pre>
 <h2>Next Steps</h2>
 <ul>

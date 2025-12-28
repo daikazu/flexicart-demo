@@ -5,7 +5,8 @@
 <ul>
 <li><strong>Percentage Conditions</strong>: Apply percentage-based adjustments (e.g., 10% discount)</li>
 <li><strong>Fixed Conditions</strong>: Apply fixed-amount adjustments (e.g., $5 off, $2.99 shipping)</li>
-<li><strong>Tax Conditions</strong>: Special conditions for tax calculations on taxable items</li>
+<li><strong>Percentage Tax Conditions</strong>: Percentage-based tax calculations on taxable items</li>
+<li><strong>Fixed Tax Conditions</strong>: Fixed-amount tax applied to taxable items</li>
 </ul>
 <h3>Condition Targets</h3>
 <p>Conditions can target different parts of the cart:</p>
@@ -102,6 +103,40 @@
 <span class="line"><span style="color:#6A737D">// Update existing item to be non-taxable</span></span>
 <span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">updateItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, [</span><span style="color:#9ECBFF">&#39;taxable&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">false</span><span style="color:#E1E4E8">]);</span></span>
 <span class="line"></span></code></pre>
+<h2>Tax Conditions</h2>
+<p>FlexiCart provides dedicated tax condition classes that automatically target taxable items:</p>
+<h3>PercentageTaxCondition</h3>
+<p>Apply percentage-based tax to taxable items only:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Types\PercentageTaxCondition</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add 8.25% sales tax</span></span>
+<span class="line"><span style="color:#E1E4E8">$salesTax </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageTaxCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Sales Tax&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">8.25</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addCondition</span><span style="color:#E1E4E8">($salesTax);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add 5% state tax</span></span>
+<span class="line"><span style="color:#E1E4E8">$stateTax </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageTaxCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;State Tax&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">5.0</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addCondition</span><span style="color:#E1E4E8">($stateTax);</span></span>
+<span class="line"></span></code></pre>
+<h3>FixedTaxCondition</h3>
+<p>Apply a fixed tax amount:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Types\FixedTaxCondition</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Add a flat $2.50 environmental fee</span></span>
+<span class="line"><span style="color:#E1E4E8">$envFee </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">FixedTaxCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Environmental Fee&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">2.50</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addCondition</span><span style="color:#E1E4E8">($envFee);</span></span>
+<span class="line"></span></code></pre>
+<blockquote>
+<p><strong>Note:</strong> Tax conditions automatically target <code>ConditionTarget::TAXABLE</code>, so you don't need to specify the target.</p>
+</blockquote>
 <h2>Condition Order</h2>
 <p>When multiple conditions are applied, they are processed in order. You can control the order using the <code>order</code> parameter:</p>
 <pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#6A737D">// This discount will be applied first</span></span>
@@ -127,6 +162,107 @@
 <span class="line"><span style="color:#6A737D">// Get conditions for a specific item</span></span>
 <span class="line"><span style="color:#E1E4E8">$item </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">item</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">);</span></span>
 <span class="line"><span style="color:#E1E4E8">$itemConditions </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> $item</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">conditions;</span></span>
+<span class="line"></span></code></pre>
+<h2>Condition Properties</h2>
+<p>When creating conditions, you can specify additional properties:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Types\PercentageCondition</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Enums\ConditionTarget</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$condition </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;VIP Discount&#39;</span><span style="color:#E1E4E8">,         </span><span style="color:#6A737D">// Required: unique identifier</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">15</span><span style="color:#E1E4E8">,                    </span><span style="color:#6A737D">// Required: adjustment value</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">SUBTOTAL</span><span style="color:#E1E4E8">, </span><span style="color:#6A737D">// Where to apply</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">attributes</span><span style="color:#E1E4E8">: [                  </span><span style="color:#6A737D">// Optional: custom metadata</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;code&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;VIP2024&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#9ECBFF">&#39;expires_at&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;2024-12-31&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    ],</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">order</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">,                      </span><span style="color:#6A737D">// Optional: processing order (default: 0)</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#B392F0">taxable</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">true</span><span style="color:#E1E4E8">                  </span><span style="color:#6A737D">// Optional: affects taxable subtotal (default: false)</span></span>
+<span class="line"><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span></code></pre>
+<h3>Property Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>required</td>
+<td>Unique identifier for the condition</td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td>int|float</td>
+<td>required</td>
+<td>The adjustment value (negative for discounts)</td>
+</tr>
+<tr>
+<td><code>target</code></td>
+<td>ConditionTarget</td>
+<td>SUBTOTAL</td>
+<td>Where to apply: ITEM, SUBTOTAL, or TAXABLE</td>
+</tr>
+<tr>
+<td><code>attributes</code></td>
+<td>array</td>
+<td>[]</td>
+<td>Custom metadata stored with the condition</td>
+</tr>
+<tr>
+<td><code>order</code></td>
+<td>int</td>
+<td>0</td>
+<td>Processing order (lower numbers first)</td>
+</tr>
+<tr>
+<td><code>taxable</code></td>
+<td>bool</td>
+<td>false</td>
+<td>When true, the condition affects taxable calculations</td>
+</tr>
+</tbody>
+</table>
+<h3>Creating Conditions from Arrays</h3>
+<p>You can create conditions from arrays using the factory method:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Conditions\Types\FixedCondition</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Enums\ConditionTarget</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">$condition </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">FixedCondition</span><span style="color:#F97583">::</span><span style="color:#B392F0">make</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;name&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;Shipping&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;value&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">5.99</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;target&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">SUBTOTAL</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#9ECBFF">&#39;attributes&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> [</span><span style="color:#9ECBFF">&#39;carrier&#39;</span><span style="color:#E1E4E8"> </span><span style="color:#F97583">=&gt;</span><span style="color:#E1E4E8"> </span><span style="color:#9ECBFF">&#39;USPS&#39;</span><span style="color:#E1E4E8">],</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span></code></pre>
+<h2>Adding Multiple Conditions</h2>
+<p>Add multiple conditions at once:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">addConditions</span><span style="color:#E1E4E8">([</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">PercentageCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Member Discount&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">-</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">SUBTOTAL</span></span>
+<span class="line"><span style="color:#E1E4E8">    ),</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#F97583">new</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">FixedCondition</span><span style="color:#E1E4E8">(</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#B392F0">name</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">&#39;Shipping&#39;</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#B392F0">value</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">5.99</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">        </span><span style="color:#B392F0">target</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">ConditionTarget</span><span style="color:#F97583">::</span><span style="color:#79B8FF">SUBTOTAL</span></span>
+<span class="line"><span style="color:#E1E4E8">    ),</span></span>
+<span class="line"><span style="color:#E1E4E8">]);</span></span>
+<span class="line"></span></code></pre>
+<h2>Clearing Item Conditions</h2>
+<p>Remove all conditions from a specific item:</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#E1E4E8">$item </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">item</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#E1E4E8">$item</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">clearConditions</span><span style="color:#E1E4E8">();</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">// Don&#39;t forget to persist the change</span></span>
+<span class="line"><span style="color:#79B8FF">Cart</span><span style="color:#F97583">::</span><span style="color:#B392F0">updateItem</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&#39;item_id&#39;</span><span style="color:#E1E4E8">, []);</span></span>
 <span class="line"></span></code></pre>
 <h2>Next Steps</h2>
 <ul>

@@ -124,6 +124,49 @@ Configure automatic cleanup of old carts when using database storage:
 ],
 ```
 
+### Running the Cleanup Command
+
+FlexiCart provides an Artisan command to clean up old carts:
+
+```bash
+# Clean up carts older than the configured lifetime
+php artisan flexicart:cleanup-carts
+
+# Force delete ALL carts (use with caution!)
+php artisan flexicart:cleanup-carts --force
+```
+
+### Scheduling Automatic Cleanup
+
+Add the cleanup command to your Laravel scheduler in `routes/console.php`:
+
+```php
+use Illuminate\Support\Facades\Schedule;
+
+// Run cleanup daily at midnight
+Schedule::command('flexicart:cleanup-carts')->daily();
+
+// Or run weekly on Sundays
+Schedule::command('flexicart:cleanup-carts')->weekly();
+```
+
+## Raw Cart Data
+
+For debugging or custom integrations, you can access raw cart data:
+
+```php
+$data = Cart::getRawCartData();
+
+// Returns:
+// [
+//     'items' => Collection of CartItem objects,
+//     'subtotal' => Price object,
+//     'total' => Price object,
+//     'count' => int,
+//     'conditions' => Collection of conditions,
+// ]
+```
+
 ## Events
 
 Enable or disable cart lifecycle events:

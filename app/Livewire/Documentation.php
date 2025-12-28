@@ -74,6 +74,10 @@ class Documentation extends Component
                 'title' => 'Extending FlexiCart',
                 'file' => $docsPath.'/EXTENDING.md',
             ],
+            'troubleshooting' => [
+                'title' => 'Troubleshooting',
+                'file' => $docsPath.'/TROUBLESHOOTING.md',
+            ],
         ];
     }
 

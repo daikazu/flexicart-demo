@@ -164,6 +164,44 @@
 <span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;conditionName (string)</span></span>
 <span class="line"><span style="color:#E1E4E8">});</span></span>
 <span class="line"></span></code></pre>
+<h3>Rule Events</h3>
+<h4><code>RuleAdded</code></h4>
+<p>Dispatched when a rule is added to the cart.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\RuleAdded</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">RuleAdded</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">RuleAdded</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Rule &#39;{</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">rule</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getName</span><span style="color:#9ECBFF">()}&#39; added to cart&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;rule (RuleInterface instance)</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;replaced (bool - true if rule with same name was replaced)</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h4><code>RuleRemoved</code></h4>
+<p>Dispatched when a rule is removed from the cart.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\RuleRemoved</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">RuleRemoved</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">RuleRemoved</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;Rule &#39;{</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">rule</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">getName</span><span style="color:#9ECBFF">()}&#39; removed from cart&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;rule (the removed RuleInterface instance)</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
+<h4><code>RulesCleared</code></h4>
+<p>Dispatched when all rules are cleared from the cart.</p>
+<pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\RulesCleared</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">Event</span><span style="color:#F97583">::</span><span style="color:#B392F0">listen</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">RulesCleared</span><span style="color:#F97583">::class</span><span style="color:#E1E4E8">, </span><span style="color:#F97583">function</span><span style="color:#E1E4E8"> (</span><span style="color:#79B8FF">RulesCleared</span><span style="color:#E1E4E8"> $event) {</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#79B8FF">Log</span><span style="color:#F97583">::</span><span style="color:#B392F0">info</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">&quot;All rules cleared: {</span><span style="color:#E1E4E8">$event</span><span style="color:#F97583">-&gt;</span><span style="color:#E1E4E8">rules</span><span style="color:#F97583">-&gt;</span><span style="color:#B392F0">count</span><span style="color:#9ECBFF">()} total&quot;</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// Available properties:</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;cartId</span></span>
+<span class="line"><span style="color:#E1E4E8">    </span><span style="color:#6A737D">// $event-&gt;rules (Collection of cleared RuleInterface instances)</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"></span></code></pre>
 <h2>Use Cases</h2>
 <h3>Inventory Management</h3>
 <pre class="shiki" style="background-color: #24292e"><code><span class="line"><span style="color:#F97583">use</span><span style="color:#E1E4E8"> </span><span style="color:#79B8FF">Daikazu\Flexicart\Events\ItemAdded</span><span style="color:#E1E4E8">;</span></span>
