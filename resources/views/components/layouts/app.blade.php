@@ -84,6 +84,10 @@
                                 Packagist
                             </a>
                             <span class="text-sm text-gray-400 dark:text-gray-600">Built with Laravel & Livewire</span>
+                            <span class="text-gray-300 dark:text-gray-700">·</span>
+                            <a href="https://mikewall.dev" target="_blank" class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-500 dark:hover:text-gray-300">
+                                Created by Mike Wall
+                            </a>
                         </div>
                     </div>
                 </div>
