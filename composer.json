@@ -12,7 +12,7 @@
         "php": "^8.3",
         "blade-ui-kit/blade-heroicons": "^2.6",
         "blade-ui-kit/blade-icons": "^1.8",
-        "daikazu/flexicart": "dev-dev",
+        "daikazu/flexicart": "^1.1",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.7",
@@ -94,10 +94,5 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "repositories": [{
-        "name": "daikazu/flexicart",
-        "type": "path",
-        "url": "/Users/mikewall/Code/flexicart",
-        "symlink": true
-    }]
+    "repositories": []
 }
