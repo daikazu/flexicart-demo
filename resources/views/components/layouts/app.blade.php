@@ -1,39 +1,14 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  class="scroll-smooth"  >
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script>
-            function applyTheme() {
-                const storedTheme = localStorage.getItem('theme');
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                }
-            }
-            applyTheme();
-            function toggleDarkMode() {
-                const isDark = document.documentElement.classList.toggle('dark');
-                localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            }
-            document.addEventListener('livewire:navigating', () => {
-                window.__darkMode = document.documentElement.classList.contains('dark');
-            });
-            document.addEventListener('livewire:navigated', () => {
-                if (window.__darkMode) {
-                    document.documentElement.classList.add('dark');
-                }
-            });
-        </script>
         <title>{{ $title ?? 'FlexiCart Demo' }} - FlexiCart for Laravel</title>
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
+        <x-darkmode-preload />
     </head>
     <body class="min-h-screen bg-gray-50 text-gray-900 antialiased transition-colors duration-300 dark:bg-gray-900 dark:text-gray-100">
         <div class="flex min-h-screen flex-col">
@@ -76,19 +51,7 @@
                         <!-- Right Side -->
                         <div class="flex items-center gap-3">
                             <!-- Dark Mode Toggle -->
-                            <button
-                                onclick="toggleDarkMode()"
-                                class="rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
-                                aria-label="Toggle dark mode"
-                            >
-                                <svg class="h-5 w-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                                </svg>
-                                <svg class="hidden h-5 w-5 dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                                </svg>
-                            </button>
-
+                            <x-dark-mode-toggle />
                             <!-- Cart Button -->
                             <livewire:cart-button />
                         </div>
