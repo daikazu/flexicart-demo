@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  class="scroll-smooth"  >
     <head>
+        <script src="https://tracking.mikewall.dev/api/script.js" data-site-id="740593f898ce" defer></script>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ $title ?? 'FlexiCart Demo' }} - FlexiCart for Laravel</title>
